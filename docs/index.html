@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-11-28">
+<meta name="dcterms.date" content="2025-12-06">
 
-<title>Analysis of Longitudinal and Clustered Data &amp; Introduction to Bayesian Data Analysis</title>
+<title>Analysis of Longitudinal and Clustered Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -66,7 +66,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./intro.html" rel="next">
+<link href="./brief_intro.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -106,6 +106,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -118,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -133,7 +162,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Analysis of Longitudinal and Clustered Data &amp; Introduction to Bayesian Data Analysis</a> 
+      <a href="./">Analysis of Longitudinal and Clustered Data</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -146,25 +175,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Preface</span></a>
+ <span class="menu-text">Introduction</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  <a href="./brief_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Brief introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  <a href="./gee.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">GEE</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">References</span></a>
+  <a href="./linear_mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear mixed model</span></span></a>
   </div>
 </li>
     </ul>
@@ -177,7 +206,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#clustered-and-longitudinal-analysis" id="toc-clustered-and-longitudinal-analysis" class="nav-link" data-scroll-target="#clustered-and-longitudinal-analysis">Clustered and longitudinal analysis</a></li>
+  <li><a href="#example-study-design-with-correlated-data" id="toc-example-study-design-with-correlated-data" class="nav-link" data-scroll-target="#example-study-design-with-correlated-data">Example study design with correlated data</a>
+  <ul class="collapse">
+  <li><a href="#cross-over-trial" id="toc-cross-over-trial" class="nav-link" data-scroll-target="#cross-over-trial">Cross-over trial</a></li>
+  <li><a href="#longitudinal-data" id="toc-longitudinal-data" class="nav-link" data-scroll-target="#longitudinal-data">Longitudinal data</a></li>
+  <li><a href="#clustered-randomised-trials" id="toc-clustered-randomised-trials" class="nav-link" data-scroll-target="#clustered-randomised-trials">Clustered Randomised trials</a></li>
+  </ul></li>
+  <li><a href="#how-to-choose-method-of-analysis" id="toc-how-to-choose-method-of-analysis" class="nav-link" data-scroll-target="#how-to-choose-method-of-analysis">How to choose method of analysis</a>
+  <ul class="collapse">
+  <li><a href="#comparing-within-cluster" id="toc-comparing-within-cluster" class="nav-link" data-scroll-target="#comparing-within-cluster">Comparing within cluster</a></li>
+  <li><a href="#comparing-between-clusters" id="toc-comparing-between-clusters" class="nav-link" data-scroll-target="#comparing-between-clusters">Comparing between clusters</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -186,7 +230,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Analysis of Longitudinal and Clustered Data &amp; Introduction to Bayesian Data Analysis</h1>
+<h1 class="title">Analysis of Longitudinal and Clustered Data</h1>
 </div>
 
 
@@ -197,7 +241,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 28, 2025</p>
+      <p class="date">December 6, 2025</p>
     </div>
   </div>
   
@@ -209,16 +253,152 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This is a Quarto book.</p>
-<p>To learn more about Quarto books visit <a href="https://quarto.org/docs/books" class="uri">https://quarto.org/docs/books</a>.</p>
+<section id="introduction" class="level1 unnumbered">
+<h1 class="unnumbered">Introduction</h1>
+<section id="clustered-and-longitudinal-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="clustered-and-longitudinal-analysis">Clustered and longitudinal analysis</h2>
+<p>Individual level RCT: randomize individuals to control group and treatment group and measure the outcome for both groups. Vast majority of data analysis of RCTs and observational data uses some from of regression (linear, logistic, generalized linear models, …)</p>
+<p>Simplest case is linear regression with single covariate, and using ordinary least squares (OLS) regression method:</p>
+<p><span class="math display">\[
+Y_i = \beta_{0} + \beta_{1}X_i+e_i
+\]</span></p>
+<p>where <span class="math inline">\(e_i\)</span> is random error with variance <span class="math inline">\(\sigma^2\)</span>. This method assumes that errors <span class="math inline">\(e_i\)</span> are independent of (uncorrelated with) each other:</p>
+<p><span class="math display">\[
+Cov(e_i,e_j) = 0 \ when \ i \neq j
+\]</span></p>
+<p>However, clustered and longitudinal data often be expected to be correlation with group (cluster):</p>
+<ul>
+<li><p>individuals may belong to clusters such as families, schools, medical centers. (<strong>clustered</strong>)</p></li>
+<li><p>the ‘units’ are not individuals but are repeated measures of the same variable on an individual over time. (<strong>longitudinal</strong>)</p></li>
+</ul>
+<p>=&gt; It is not make sense to assume the errors in the regression model are all uncorrelated with each other</p>
+<p>=&gt; If using OLS regression methods (ignoring the correlation structure) to those type of data will generally product <strong>unbiased estimates of effect</strong> but:</p>
+<ul>
+<li><p>Incorrect standard error (SE) =&gt; poor inference (<strong>more important</strong>)</p></li>
+<li><p>The estimates of effects (i.e.&nbsp;regression coefficients) may be more variable (less efficient) than they could be</p></li>
+</ul>
+</section>
+<section id="example-study-design-with-correlated-data" class="level2">
+<h2 class="anchored" data-anchor-id="example-study-design-with-correlated-data">Example study design with correlated data</h2>
+<section id="cross-over-trial" class="level3">
+<h3 class="anchored" data-anchor-id="cross-over-trial">Cross-over trial</h3>
+<p><img src="./fig/cross-over-trial.png" class="img-fluid"></p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><p>Within-individual comparison - variability of outcome for treatment effect reduced because less variability within- than between-individuals</p></li>
+<li><p>Fewer participants needed than a parallel group design</p></li>
+</ul>
+<p><strong>Cons:</strong></p>
+<p>Carry over effect of the intervention (design assumes minimal carry over effect)</p>
+<p>Participants drop out after 1st treatment and don’t receive 2nd treatment</p>
+<p>Generally, only suitable for:</p>
+<ul>
+<li>Participants with conditions or diseases that are chronic or relatively stable</li>
+<li>Short-term outcomes</li>
+<li>Interventions with short term impact, so washout period is feasible</li>
+</ul>
+</section>
+<section id="longitudinal-data" class="level3">
+<h3 class="anchored" data-anchor-id="longitudinal-data">Longitudinal data</h3>
+<p>In this practical we will use data from a study investigating recovery following appendectomy in children. The aim of the study was to determine whether the children who underwent a laparoscopic appendectomy achieved a faster rate of recovery than children who underwent conventional “open” appendectomy.</p>
+<p>In this study a measure of recovery was made using an “uptimer”, a device worn by the children on their thigh. The uptimer senses the position of the thigh and records the times of changes from a horizontal position to a “vertical” position (at least 45 degrees from the horizontal). An increasing number of position changes (horizontal to vertical) from one day to the next is a marker of recovery.</p>
+<p>Data were obtained from 29 children aged between 8 and 15 years, 18 of whom underwent laparoscopic appendectomy and 11 underwent open appendectomy. The children were not randomly assigned to the types of operation – the decision was made by the surgeon on call at the time of presentation. The uptime data was intended to be recorded for each child from day two post-operatively and thereafter, however some missing data resulted. In this practical we consider days two to five post-surgery.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>appendix <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"./data/appendix.dta"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>appendix<span class="sc">$</span>lognchanges <span class="ot">=</span> <span class="fu">log</span>(appendix<span class="sc">$</span>nchanges)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>appendix<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">factor</span>(appendix<span class="sc">$</span>group,<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Lap"</span>,<span class="st">"Open"</span>))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(appendix, <span class="fu">aes</span>(day,lognchanges,<span class="at">group=</span>patid))<span class="sc">+</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>group)<span class="sc">+</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"log number of changes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
 </div>
 </div>
+</div>
+</section>
+<section id="clustered-randomised-trials" class="level3">
+<h3 class="anchored" data-anchor-id="clustered-randomised-trials">Clustered Randomised trials</h3>
+<p><img src="./fig/ClusterRandomisation.png" class="img-fluid"></p>
+<p>Cluster randomised trials are experiments in which clusters of individuals (e.g.&nbsp;schools, villages, general practices) rather than independent individuals are randomly allocated to intervention groups</p>
+<p>Potential reasons include:</p>
+<ul>
+<li><p>Intervention naturally applied at the cluster level (e.g.&nbsp;Effect of water and environment revitalisation in informal settlements in Indonesia and Fiji (RISE))</p></li>
+<li><p>To avoid treatment group contamination (e.g.&nbsp;education program vs usual care to patients in a general practice)</p></li>
+<li><p>Applying the intervention at the cluster level is more feasible than at the individual level (e.g.&nbsp;intervention at a school)</p></li>
+<li><p>Ethical considerations</p></li>
+<li><p>To enhance participant compliance</p></li>
+</ul>
+<p>Unit of randomisation: cluster</p>
+<p>Unit of outcome measure: individual</p>
+<ul>
+<li><p>Observations on participants in the same cluster tend to be correlated (intracluster correlation)</p></li>
+<li><p>Sample size for a cluster randomized trial needs to be greater than an individually randomized trial</p></li>
+<li><p>Sample size needs to be inflated by ‘design effect’ which depends on intracluster correlation and average cluster size. (Note, it is better to have a large number of clusters with less participants per cluster, than a small number of clusters with many participants per cluster)</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The analysis of outcome measures at the individual participant level need to take account of clustering</p>
+</div>
+</div>
+</section>
+</section>
+<section id="how-to-choose-method-of-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-choose-method-of-analysis">How to choose method of analysis</h2>
+<p>Based on:</p>
+<ul>
+<li><p>Data structure</p></li>
+<li><p>Research question</p></li>
+</ul>
+<section id="comparing-within-cluster" class="level3">
+<h3 class="anchored" data-anchor-id="comparing-within-cluster">Comparing within cluster</h3>
+<p>When analysis question involves comparisons within clusters, considering the clustering <strong>increases</strong> precision of estimation (lower standard errors, smaller P-values). Because we are removing a source of variation from the comparison</p>
+<p>Data structure examples:</p>
+<ul>
+<li><p>Longitudinal studies (collect the same measurement overtime, and compare within individuals)</p></li>
+<li><p>Cross over-trials</p></li>
+</ul>
+</section>
+<section id="comparing-between-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="comparing-between-clusters">Comparing between clusters</h3>
+<p>When analysis question involves comparisons between clusters, considering the clustering decreases precision of estimation (higher standard errors, higher P-values). Because positive intra-cluster correlation reduces the amount of independent information provided by individuals</p>
+<p>Data structure examples:</p>
+<ul>
+<li>Cluster trials</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<p>Study designs have the correlated observations:</p>
+<ul>
+<li><p>Clusters – individuals from the same family, hospital, school</p></li>
+<li><p>Longitudinal data – repeated measures of an outcome on the same individual</p></li>
+<li><p>Paired data – two measurements from the same individual (e.g.&nbsp;cross-over trials)</p></li>
+</ul>
+<p>=&gt; If we ignore this correlation, conclusions obtained will be misleading: Incorrect standard errors (will be illustrated in the next section <a href="brief_intro.html#sec-cwc" class="quarto-xref"><span>Comparison within cluster</span></a>)</p>
+<p>Accounting for clustering:</p>
+<ul>
+<li><p>Increases precision for within-cluster comparisons</p></li>
+<li><p>Decreases precision for between-cluster comparisons</p></li>
+</ul>
 
 
 </section>
@@ -628,8 +808,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./brief_intro.html" class="pagination-link" aria-label="Brief introduction">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Brief introduction</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -2,41 +2,71 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Analysis of Longitudinal and Clustered Data & Introduction to Bayesian Data Analysis",
+    "title": "Analysis of Longitudinal and Clustered Data",
     "section": "",
-    "text": "Preface\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books.\n\n1 + 1\n\n[1] 2",
+    "text": "Introduction",
     "crumbs": [
-      "Preface"
+      "Introduction"
     ]
   },
   {
-    "objectID": "intro.html",
-    "href": "intro.html",
-    "title": "1  Introduction",
-    "section": "",
-    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n1 + 1\n\n[1] 2\n\n\n\n\n\n\nKnuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "objectID": "index.html#clustered-and-longitudinal-analysis",
+    "href": "index.html#clustered-and-longitudinal-analysis",
+    "title": "Analysis of Longitudinal and Clustered Data",
+    "section": "Clustered and longitudinal analysis",
+    "text": "Clustered and longitudinal analysis\nIndividual level RCT: randomize individuals to control group and treatment group and measure the outcome for both groups. Vast majority of data analysis of RCTs and observational data uses some from of regression (linear, logistic, generalized linear models, …)\nSimplest case is linear regression with single covariate, and using ordinary least squares (OLS) regression method:\n\\[\nY_i = \\beta_{0} + \\beta_{1}X_i+e_i\n\\]\nwhere \\(e_i\\) is random error with variance \\(\\sigma^2\\). This method assumes that errors \\(e_i\\) are independent of (uncorrelated with) each other:\n\\[\nCov(e_i,e_j) = 0 \\ when \\ i \\neq j\n\\]\nHowever, clustered and longitudinal data often be expected to be correlation with group (cluster):\n\nindividuals may belong to clusters such as families, schools, medical centers. (clustered)\nthe ‘units’ are not individuals but are repeated measures of the same variable on an individual over time. (longitudinal)\n\n=&gt; It is not make sense to assume the errors in the regression model are all uncorrelated with each other\n=&gt; If using OLS regression methods (ignoring the correlation structure) to those type of data will generally product unbiased estimates of effect but:\n\nIncorrect standard error (SE) =&gt; poor inference (more important)\nThe estimates of effects (i.e. regression coefficients) may be more variable (less efficient) than they could be",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+      "Introduction"
     ]
   },
   {
-    "objectID": "summary.html",
-    "href": "summary.html",
-    "title": "2  Summary",
-    "section": "",
-    "text": "In summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2",
+    "objectID": "index.html#example-study-design-with-correlated-data",
+    "href": "index.html#example-study-design-with-correlated-data",
+    "title": "Analysis of Longitudinal and Clustered Data",
+    "section": "Example study design with correlated data",
+    "text": "Example study design with correlated data\n\nCross-over trial\n\nPros:\n\nWithin-individual comparison - variability of outcome for treatment effect reduced because less variability within- than between-individuals\nFewer participants needed than a parallel group design\n\nCons:\nCarry over effect of the intervention (design assumes minimal carry over effect)\nParticipants drop out after 1st treatment and don’t receive 2nd treatment\nGenerally, only suitable for:\n\nParticipants with conditions or diseases that are chronic or relatively stable\nShort-term outcomes\nInterventions with short term impact, so washout period is feasible\n\n\n\nLongitudinal data\nIn this practical we will use data from a study investigating recovery following appendectomy in children. The aim of the study was to determine whether the children who underwent a laparoscopic appendectomy achieved a faster rate of recovery than children who underwent conventional “open” appendectomy.\nIn this study a measure of recovery was made using an “uptimer”, a device worn by the children on their thigh. The uptimer senses the position of the thigh and records the times of changes from a horizontal position to a “vertical” position (at least 45 degrees from the horizontal). An increasing number of position changes (horizontal to vertical) from one day to the next is a marker of recovery.\nData were obtained from 29 children aged between 8 and 15 years, 18 of whom underwent laparoscopic appendectomy and 11 underwent open appendectomy. The children were not randomly assigned to the types of operation – the decision was made by the surgeon on call at the time of presentation. The uptime data was intended to be recorded for each child from day two post-operatively and thereafter, however some missing data resulted. In this practical we consider days two to five post-surgery.\n\nlibrary(haven)\nlibrary(ggplot2)\nappendix &lt;- read_dta(\"./data/appendix.dta\")\n\nappendix$lognchanges = log(appendix$nchanges)\nappendix$group &lt;- factor(appendix$group,labels = c(\"Lap\",\"Open\"))\nggplot(appendix, aes(day,lognchanges,group=patid))+\n  geom_point()+\n  geom_line()+\n  facet_wrap(~group)+\n  theme_minimal()+\n  labs(y = \"log number of changes\")\n\n\n\n\n\n\n\n\n\n\nClustered Randomised trials\n\nCluster randomised trials are experiments in which clusters of individuals (e.g. schools, villages, general practices) rather than independent individuals are randomly allocated to intervention groups\nPotential reasons include:\n\nIntervention naturally applied at the cluster level (e.g. Effect of water and environment revitalisation in informal settlements in Indonesia and Fiji (RISE))\nTo avoid treatment group contamination (e.g. education program vs usual care to patients in a general practice)\nApplying the intervention at the cluster level is more feasible than at the individual level (e.g. intervention at a school)\nEthical considerations\nTo enhance participant compliance\n\nUnit of randomisation: cluster\nUnit of outcome measure: individual\n\nObservations on participants in the same cluster tend to be correlated (intracluster correlation)\nSample size for a cluster randomized trial needs to be greater than an individually randomized trial\nSample size needs to be inflated by ‘design effect’ which depends on intracluster correlation and average cluster size. (Note, it is better to have a large number of clusters with less participants per cluster, than a small number of clusters with many participants per cluster)\n\n\n\n\n\n\n\nNote\n\n\n\nThe analysis of outcome measures at the individual participant level need to take account of clustering",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Summary</span>"
+      "Introduction"
     ]
   },
   {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
-    "section": "",
-    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput.\nJ. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "objectID": "index.html#how-to-choose-method-of-analysis",
+    "href": "index.html#how-to-choose-method-of-analysis",
+    "title": "Analysis of Longitudinal and Clustered Data",
+    "section": "How to choose method of analysis",
+    "text": "How to choose method of analysis\nBased on:\n\nData structure\nResearch question\n\n\nComparing within cluster\nWhen analysis question involves comparisons within clusters, considering the clustering increases precision of estimation (lower standard errors, smaller P-values). Because we are removing a source of variation from the comparison\nData structure examples:\n\nLongitudinal studies (collect the same measurement overtime, and compare within individuals)\nCross over-trials\n\n\n\nComparing between clusters\nWhen analysis question involves comparisons between clusters, considering the clustering decreases precision of estimation (higher standard errors, higher P-values). Because positive intra-cluster correlation reduces the amount of independent information provided by individuals\nData structure examples:\n\nCluster trials",
     "crumbs": [
-      "References"
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "brief_intro.html",
+    "href": "brief_intro.html",
+    "title": "1  Brief introduction",
+    "section": "",
+    "text": "1.1 Comparison within cluster\nA small cross-over trial of asthma medications in children aged 7-14 years. Outcome is the peak expiratory flow.\nResearch question:",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Brief introduction</span>"
+    ]
+  },
+  {
+    "objectID": "brief_intro.html#sec-cwc",
+    "href": "brief_intro.html#sec-cwc",
+    "title": "1  Brief introduction",
+    "section": "",
+    "text": "Is there evidence that mean peak flow is different between treatment and control?\n\n\n1.1.1 Data\n\n\n\n\n\n\n\nVariable name\nDescription\n\n\n\n\nsub\nSubject identifier\n\n\npef0\nPeak flow measurement under control\n\n\npef1\nPeak flow measurement under treatment\n\n\nseq\nOrder in which treatments were received (1 = treatment followed by control; 2 = control followed by treatment)\n\n\n\n\nlibrary(haven)\npef &lt;- read_dta(\"./data/pef.dta\")\npef\n\n# A tibble: 10 × 4\n     sub  pef0  pef1 seq                \n   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl+lbl&gt;          \n 1     1   330   335 1 [Treatment first]\n 2     2   270   310 2 [Control first]  \n 3     3   350   360 2 [Control first]  \n 4     4   240   290 1 [Treatment first]\n 5     5   320   330 1 [Treatment first]\n 6     6   360   350 2 [Control first]  \n 7     7   340   380 1 [Treatment first]\n 8     8   280   335 2 [Control first]  \n 9     9   365   370 1 [Treatment first]\n10    10   320   340 2 [Control first]  \n\n\n\n\n1.1.2 Ignoring the paired structure\nWhen we are not consider the paired outcome, and using independence two-sample t-test, we will obtain\n\nlibrary(tidyr); library(dplyr)\nlibrary(ggplot2)\npef.long &lt;- pivot_longer(pef, \n                         cols = c(\"pef0\", \"pef1\"), \n                         names_to = \"trt\", \n                         values_to = \"pef\") \n\npef.long$trt &lt;- ifelse(pef.long$trt==\"pef0\",\"control\",\"treatment\")\n\n\n# two ways to implement two samples independent t-test in R\n## t-test function\nt.test(pef ~ trt, data=pef.long,var.equal = TRUE)\n\n\n    Two Sample t-test\n\ndata:  pef by trt\nt = -1.4387, df = 18, p-value = 0.1674\nalternative hypothesis: true difference in means between group control and group treatment is not equal to 0\n95 percent confidence interval:\n -55.35666  10.35666\nsample estimates:\n  mean in group control mean in group treatment \n                  317.5                   340.0 \n\n## using linear regression\nsummary(lm(pef~trt,data=pef.long))\n\n\nCall:\nlm(formula = pef ~ trt, data = pef.long)\n\nResiduals:\n   Min     1Q Median     3Q    Max \n-77.50 -15.00   2.50  24.38  47.50 \n\nCoefficients:\n             Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)    317.50      11.06  28.711   &lt;2e-16 ***\ntrttreatment    22.50      15.64   1.439    0.167    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 34.97 on 18 degrees of freedom\nMultiple R-squared:  0.1031,    Adjusted R-squared:  0.05331 \nF-statistic:  2.07 on 1 and 18 DF,  p-value: 0.1674\n\n\n\nconfint(lm(pef~trt,data=pef.long), level=0.95)\n\n                 2.5 %    97.5 %\n(Intercept)  294.26684 340.73316\ntrttreatment -10.35666  55.35666\n\n\n\nThe estimated treatment effect is 340-317.5 = 22.5 (95% CI = [-10.36, 55.36])\nStandard error is 15.64\n\n\n\n1.1.3 Consider the paired structure\n\nt.test(pef$pef1,pef$pef0,paired=T)\n\n\n    Paired t-test\n\ndata:  pef$pef1 and pef$pef0\nt = 3.2134, df = 9, p-value = 0.0106\nalternative hypothesis: true mean difference is not equal to 0\n95 percent confidence interval:\n  6.660412 38.339588\nsample estimates:\nmean difference \n           22.5 \n\nsd(pef$pef1-pef$pef0)/sqrt(10) # standard error of estimate \n\n[1] 7.001984\n\n\nSame estimated treatment error is 22.5, but more precise with lower standard error 7.0019838\n\n\n\n\n\n\nNoteConclusion\n\n\n\nWhen using independent two-sample t-test, the test treat observation from the same subject as independent observations. It not valid, because in this data there is the correlation between observation from the same subject (paired data).\n\n\n\n\n1.1.4 When some pairs have missing data ?\nSuppose some paired have one ‘half’ missing data: are these cases still informative?\nIn this section, we just stop at introduce the linear mixed effects model, when using linear mixed effects model for the paired data without missing data, it equal using paired t-test\n\\[\nY_i = \\beta_0 + \\beta_1 X_{ij} + S_i + e_{ij}\n\\]\nWhere:\n\n\\(\\beta_0\\): the population expected response in control group\n\\(\\beta_1\\): treatment different\n\\(S_i\\): systematic differents between individual (assumed ~ N(0,\\(\\sigma_s^2\\)))\n\\(e_{ij}\\): within individual error (assumed ~ N(0,\\(\\sigma_e^2\\)))\n\nThe output of the model includes: fixed effect (\\(\\beta_0,\\beta_1\\)), random effect (\\(\\sigma_s^2,\\sigma_e^2\\))\n\nlibrary(lme4)                  # mixed effects models\n\n## fit lme model for peak flow data\n\nfit.lmer1 &lt;- lmer(pef ~ trt + (1|sub), data = pef.long)\nsummary(fit.lmer1)\n\nLinear mixed model fit by REML ['lmerMod']\nFormula: pef ~ trt + (1 | sub)\n   Data: pef.long\n\nREML criterion at convergence: 174.5\n\nScaled residuals: \n     Min       1Q   Median       3Q      Max \n-1.33176 -0.45244  0.00889  0.58564  1.22464 \n\nRandom effects:\n Groups   Name        Variance Std.Dev.\n sub      (Intercept) 977.8    31.27   \n Residual             245.1    15.66   \nNumber of obs: 20, groups:  sub, 10\n\nFixed effects:\n             Estimate Std. Error t value\n(Intercept)   317.500     11.059  28.711\ntrttreatment   22.500      7.002   3.213\n\nCorrelation of Fixed Effects:\n            (Intr)\ntrttreatmnt -0.317\n\nconfint(fit.lmer1, level=0.95)\n\n                  2.5 %    97.5 %\n.sig01        18.086710  51.50392\n.sigma        10.131426  24.80399\n(Intercept)  295.142588 339.85741\ntrttreatment   8.124216  36.87578\n\n\n\n\n\n\n\n\nNoteConclusion\n\n\n\nThe estimated treatment effect (mean difference, treatment vs control) and its standard error are:\n\nEstimated treatment effect = 22.5\nSE = 7.002\n\nThese are exactly the same numbers as those obtained for the paired t-test. (N.B. You may see a difference of sign, simply because the t-test and mixed model estimation treat the two groups in the opposite order when defining the comparison.) So in the case of fully observed paired data, the mixed model (estimated by the “REML” method) is equivalent to the paired t-test.\n\n\nUsing gtsummary and broom package for summary table of model output\n\nlibrary(gtsummary)\nmodel &lt;- lmer(pef ~ trt + (1|sub), data = pef.long)  \n\nmodel |&gt;\n  tbl_regression(\n    intercept = TRUE,\n    tidy_fun = broom.mixed::tidy,\n    estimate_fun = purrr::partial(style_ratio, digits = 3)\n  ) |&gt;\n  as_gt() |&gt;\n  gt::summary_rows(\n    groups = NULL,\n    columns = everything(),\n    fns = list(\n      \"Variance (subject)\"  = ~ sprintf(\"%.3f\", as.data.frame(VarCorr(model))$vcov[1]),\n      \"Variance (residual)\" = ~ sprintf(\"%.3f\", as.data.frame(VarCorr(model))$vcov[2])\n    )\n  )\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCharacteristic\nBeta\n95% CI\n\n\n\n\n\n(Intercept)\n317.5\n295.8, 339.2\n\n\n\ntrt\n\n\n\n\n\n\n\n    control\n—\n—\n\n\n\n    treatment\n22.50\n8.776, 36.22\n\n\n\nsub.sd__(Intercept)\n31.27\n\n\n\n\n\nResidual.sd__Observation\n15.66\n\n\n\n\nVariance (subject)\n977.778\n977.778\n977.778\n\n\nVariance (residual)\n245.139\n245.139\n245.139\n\n\n\nAbbreviation: CI = Confidence Interval\n\n\n\n\n\n\n\n\nThe output of this model:\n\n\\(\\beta_0\\): (Intercept)\n\\(\\beta_1\\): treatment in trt labels\n\\(\\sigma_s\\): sub.sd_(Intercept)\n\\(\\sigma_e\\): Residual.sd_Observation\n\\(\\sigma_s^2\\): Variance (subject)\n\\(\\sigma_e^2\\): Variance (residual)\n\n\nEstimating the ICC (intra class correlation)\n\n\\(\\sigma_s^2\\) = 977.78: represents the between-subject variation, i.e. the variability in “underlying” peak flow between subjects.\n\\(\\sigma_e^2\\) = 245.14: represents the within-subject variation, i.e. the variability among peak flow measurements on the same person (under the same treatment)\n\nThe (estimated) intraclass correlation coefficient is:\n\\[ICC = \\frac{977.78}{977.78+245.14} = 0.7995\\]",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Brief introduction</span>"
+    ]
+  },
+  {
+    "objectID": "brief_intro.html#comparison-between-cluster",
+    "href": "brief_intro.html#comparison-between-cluster",
+    "title": "1  Brief introduction",
+    "section": "1.2 Comparison between cluster",
+    "text": "1.2 Comparison between cluster",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Brief introduction</span>"
     ]
   }
 ]

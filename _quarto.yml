@@ -2,14 +2,19 @@ project:
   type: book
   output-dir: docs
 
+execute:
+  echo: true
+  warning: false
+  message: false
+
 book:
-  title: "Analysis of Longitudinal and Clustered Data & Introduction to Bayesian Data Analysis"
+  title: "Analysis of Longitudinal and Clustered Data"
   date: last-modified
   chapters:
     - index.qmd
-    - intro.qmd
-    - summary.qmd
-    - references.qmd
+    - brief_intro.qmd
+    - gee.qmd
+    - linear_mixed.qmd
 
 bibliography: references.bib
 

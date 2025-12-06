@@ -1,0 +1,168 @@
+# Brief introduction
+
+## Comparison within cluster  {#sec-cwc}
+
+
+
+A small cross-over trial of asthma medications in children aged 7-14 years. Outcome is the peak expiratory flow. 
+
+**Research question**:
+
+- Is there evidence that mean peak flow is different between treatment and control?
+
+### Data
+
+|Variable name|Description|
+|:------------|:----------|
+|sub|Subject identifier|
+|pef0|Peak flow measurement under control|
+|pef1|Peak flow measurement under treatment|
+|seq|Order in which treatments were received (1 = treatment followed by control; 2 = control followed by treatment)|
+
+```{r}
+library(haven)
+pef <- read_dta("./data/pef.dta")
+pef
+```
+
+### Ignoring the paired structure
+
+When we are not consider the paired outcome, and using independence two-sample t-test, we will obtain 
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyr); library(dplyr)
+library(ggplot2)
+pef.long <- pivot_longer(pef, 
+                         cols = c("pef0", "pef1"), 
+                         names_to = "trt", 
+                         values_to = "pef") 
+
+pef.long$trt <- ifelse(pef.long$trt=="pef0","control","treatment")
+```
+
+```{r}
+# two ways to implement two samples independent t-test in R
+## t-test function
+t.test(pef ~ trt, data=pef.long,var.equal = TRUE)
+## using linear regression
+summary(lm(pef~trt,data=pef.long))
+```
+
+```{r}
+confint(lm(pef~trt,data=pef.long), level=0.95)
+```
+
+
+- The estimated treatment effect is 340-317.5 = 22.5 (95% CI = [-10.36, 55.36])
+- Standard error is 15.64
+
+
+### Consider the paired structure
+
+```{r}
+t.test(pef$pef1,pef$pef0,paired=T)
+
+sd(pef$pef1-pef$pef0)/sqrt(10) # standard error of estimate 
+```
+
+Same estimated treatment error is 22.5, but more precise with lower standard error `r sd(pef$pef1-pef$pef0)/sqrt(10)`
+
+
+::: {.callout-note title = "Conclusion"}
+
+When using independent two-sample t-test, the test treat observation from the same subject as independent observations. It not valid, because in this data there is the correlation between observation from the same subject (paired data).
+
+:::
+
+### When some pairs have missing data ?
+
+Suppose some paired have one 'half' missing data: are these cases still informative?
+
+In this section, we just stop at introduce the linear mixed effects model, when using linear mixed effects model for the paired data without missing data, it equal using **paired t-test**
+
+$$
+Y_i = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
+$$
+
+Where:
+
+  - $\beta_0$: the population expected response in control group
+  - $\beta_1$: treatment different
+  - $S_i$: systematic differents between individual (assumed ~ N(0,$\sigma_s^2$))
+  - $e_{ij}$: within individual error (assumed ~ N(0,$\sigma_e^2$))
+
+The output of the model includes: fixed effect ($\beta_0,\beta_1$), random effect ($\sigma_s^2,\sigma_e^2$)
+
+```{r}
+#| message: false
+#| warning: false
+
+library(lme4)                  # mixed effects models
+
+## fit lme model for peak flow data
+
+fit.lmer1 <- lmer(pef ~ trt + (1|sub), data = pef.long)
+summary(fit.lmer1)
+confint(fit.lmer1, level=0.95)
+```
+
+::: {.callout-note title = "Conclusion"}
+
+The estimated treatment effect (mean difference, treatment vs control) and its standard error are:
+
+  - Estimated treatment effect = 22.5
+
+  - SE = 7.002
+
+These are exactly the same numbers as those obtained for the paired t-test. (N.B. You may see a difference of sign, simply because the t-test and mixed model estimation treat the two groups in the opposite order when defining the comparison.) So in the case of fully observed paired data, the mixed model (estimated by the “REML” method) is equivalent to the paired t-test.
+
+:::
+
+
+
+Using gtsummary and broom package for summary table of model output 
+
+```{r}
+library(gtsummary)
+model <- lmer(pef ~ trt + (1|sub), data = pef.long)  
+
+model |>
+  tbl_regression(
+    intercept = TRUE,
+    tidy_fun = broom.mixed::tidy,
+    estimate_fun = purrr::partial(style_ratio, digits = 3)
+  ) |>
+  as_gt() |>
+  gt::summary_rows(
+    groups = NULL,
+    columns = everything(),
+    fns = list(
+      "Variance (subject)"  = ~ sprintf("%.3f", as.data.frame(VarCorr(model))$vcov[1]),
+      "Variance (residual)" = ~ sprintf("%.3f", as.data.frame(VarCorr(model))$vcov[2])
+    )
+  )
+```
+
+
+The output of this model:
+
+  - $\beta_0$: (Intercept)
+  - $\beta_1$: treatment in trt labels
+  - $\sigma_s$: sub.sd_(Intercept)
+  - $\sigma_e$: Residual.sd_Observation
+  - $\sigma_s^2$: Variance (subject)
+  - $\sigma_e^2$: Variance (residual)
+
+#### **Estimating the ICC (intra class correlation)** {.unnumbered}
+
+  - $\sigma_s^2$ = 977.78: represents the between-subject variation, i.e. the variability in “underlying” peak flow between subjects.
+  
+  - $\sigma_e^2$ = 245.14: represents the within-subject variation, i.e. the variability among peak flow measurements on the same person (under the same treatment)
+
+The (estimated) intraclass correlation coefficient is:
+
+$$ICC = \frac{977.78}{977.78+245.14} = 0.7995$$
+
+## Comparison between cluster
