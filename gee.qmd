@@ -1,1 +1,169 @@
-# GEE {#sec-gee}
+# Generalized Estimating Equation {#sec-gee}
+
+## Data description
+
+Potthoff and Roy growth data:
+
+  - Growth measurements for 27 children (11 girls and 16 boys)
+  
+  - Distance (in mm) from the centre of the pituitary gland to the pterygo-maxillary fissure recorded at ages 8, 10, 12 and 14 years.
+
+  - Interested in the differences between males and females in pattern of growth over the 4 time points (from age 8 to 14 years).
+
+```{r}
+library(haven)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(mice)
+library(ggcorrplot)
+library(gtsummary)
+```
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+potthoffroy |> 
+  pivot_longer(cols = -c(id,sex)) |> 
+  mutate(age = str_extract(name,'\\d+') |> as.numeric()) |> 
+  ggplot(aes(x = age,y = value))+
+  geom_line(aes(group = id))+
+  facet_wrap(~sex)+
+  theme_bw()
+```
+
+We consider the correlation of the value in male and female group
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+potthoffroy |> 
+  filter(sex == "M") |> 
+  select(-c(id,sex)) |> 
+  cor(use="pairwise.complete.obs")|> 
+  ggcorrplot(lab = TRUE) +
+  labs(tag = "Male")
+```
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+potthoffroy |> 
+  filter(sex == "F") |> 
+  select(-c(id,sex)) |> 
+  cor(use="pairwise.complete.obs")|> 
+  ggcorrplot(lab = TRUE) +
+  labs(tag = "Female")
+```
+
+:::
+
+::::
+
+::: {.callout-note title = "Conclusion"}
+
+Positive correlations within-cluster. Greater for Females than Males.
+
+:::
+
+## Fitting OLS 
+
+```{r}
+data <- potthoffroy |> 
+  pivot_longer(cols = -c(id,sex)) |> 
+  mutate(age = str_extract(name,'\\d+') |> as.numeric(),
+         sex = factor(sex,labels = c(0,1))) 
+
+lm_model <- lm(value ~ sex + age, data = data)
+
+summary(lm_model)
+```
+
+::: {.callout-warning}
+
+Pretend observations independent – **WRONG!!**
+
+The estimation of beta (sex, age, intercept) is unbiased, but the standard errors are incorrect if the covariance is not independent.
+
+:::
+
+## How can we estimate the correct variance of the OLS estimator when the data are not independent?
+
+Robust / empirical / “sandwich” variance estimator:
+
+  - Use actual correlations observed in the data (i.e. empirical correlations)
+  
+  - Robust – for a large number of clusters it converges to the correct variance of the OLS parameter estimate, irrespective of what the true covariance V is, as long as the corrected model for the mean of Y has been specified.
+  
+  - Sandwich: the data driven empirical estimator is the “meat” in the sandwich between two model-based terms (“slices of bread”)
+
+
+
+```{r}
+library(lmtest)
+library(sandwich)
+
+lm_model <- lm(value ~ sex + age, data = data)
+
+## Robust step
+cov_cl <- vcovCL(lm_model, cluster = data$id)
+cov_cl
+
+se_robust_model <- coeftest(lm_model, vcov = cov_cl)
+
+se_robust_model
+
+```
+
+Compare
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+lm_model |> 
+tbl_regression(
+  intercept = TRUE,
+  estimate_fun = purrr::partial(style_ratio, digits = 3)) |> 
+  remove_row_type(
+    type = "reference"
+  )
+```
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+se_robust_model |> 
+  tbl_regression(
+    intercept = TRUE,
+    estimate_fun = purrr::partial(style_ratio, digits = 3)
+  ) 
+```
+
+:::
+
+::::
+
+Sex: difference in mean outcome between sexes at any age = between-subject comparison
+
+  - SE with robust > SE assuming independence (`r se_robust_model[, "Std. Error"][2]` > `r sqrt(diag(vcov(lm_model)))[2]`)
+  
+  - Between cluster comparison is LESS precise with positive within-subject correlation
+
+Age: effect estimated within-subject.
+
+  - SE with robust < SE independence ( `r se_robust_model[, "Std. Error"][3]` > `r sqrt(diag(vcov(lm_model)))[3]`)
+  
+  - Within-cluster comparison is MORE precise with positive correlation
+
+
+
+

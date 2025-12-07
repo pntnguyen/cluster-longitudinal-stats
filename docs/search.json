@@ -78,5 +78,45 @@
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Brief introduction</span>"
     ]
+  },
+  {
+    "objectID": "gee.html",
+    "href": "gee.html",
+    "title": "2  Generalized Estimating Equation",
+    "section": "",
+    "text": "2.1 Data description\nPotthoff and Roy growth data:\nlibrary(haven)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(tidyr)\nlibrary(stringr)\nlibrary(mice)\nlibrary(ggcorrplot)\nlibrary(gtsummary)\npotthoffroy |&gt; \n  pivot_longer(cols = -c(id,sex)) |&gt; \n  mutate(age = str_extract(name,'\\\\d+') |&gt; as.numeric()) |&gt; \n  ggplot(aes(x = age,y = value))+\n  geom_line(aes(group = id))+\n  facet_wrap(~sex)+\n  theme_bw()\nWe consider the correlation of the value in male and female group",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Generalized Estimating Equation</span>"
+    ]
+  },
+  {
+    "objectID": "gee.html#data-description",
+    "href": "gee.html#data-description",
+    "title": "2  Generalized Estimating Equation",
+    "section": "",
+    "text": "Growth measurements for 27 children (11 girls and 16 boys)\nDistance (in mm) from the centre of the pituitary gland to the pterygo-maxillary fissure recorded at ages 8, 10, 12 and 14 years.\nInterested in the differences between males and females in pattern of growth over the 4 time points (from age 8 to 14 years).\n\n\n\n\n\n\n\npotthoffroy |&gt; \n  filter(sex == \"M\") |&gt; \n  select(-c(id,sex)) |&gt; \n  cor(use=\"pairwise.complete.obs\")|&gt; \n  ggcorrplot(lab = TRUE) +\n  labs(tag = \"Male\")\n\n\n\n\n\n\n\n\n\n\npotthoffroy |&gt; \n  filter(sex == \"F\") |&gt; \n  select(-c(id,sex)) |&gt; \n  cor(use=\"pairwise.complete.obs\")|&gt; \n  ggcorrplot(lab = TRUE) +\n  labs(tag = \"Female\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNoteConclusion\n\n\n\nPositive correlations within-cluster. Greater for Females than Males.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Generalized Estimating Equation</span>"
+    ]
+  },
+  {
+    "objectID": "gee.html#fitting-ols",
+    "href": "gee.html#fitting-ols",
+    "title": "2  Generalized Estimating Equation",
+    "section": "2.2 Fitting OLS",
+    "text": "2.2 Fitting OLS\n\ndata &lt;- potthoffroy |&gt; \n  pivot_longer(cols = -c(id,sex)) |&gt; \n  mutate(age = str_extract(name,'\\\\d+') |&gt; as.numeric(),\n         sex = factor(sex,labels = c(0,1))) \n\nlm_model &lt;- lm(value ~ sex + age, data = data)\n\nsummary(lm_model)\n\n\nCall:\nlm(formula = value ~ sex + age, data = data)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-5.9882 -1.4882 -0.0586  1.1916  5.3711 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept) 15.38569    1.12857  13.633  &lt; 2e-16 ***\nsex1         2.32102    0.44489   5.217 9.20e-07 ***\nage          0.66019    0.09776   6.753 8.25e-10 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 2.272 on 105 degrees of freedom\nMultiple R-squared:  0.4095,    Adjusted R-squared:  0.3983 \nF-statistic: 36.41 on 2 and 105 DF,  p-value: 9.726e-13\n\n\n\n\n\n\n\n\nWarning\n\n\n\nPretend observations independent – WRONG!!\nThe estimation of beta (sex, age, intercept) is unbiased, but the standard errors are incorrect if the covariance is not independent.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Generalized Estimating Equation</span>"
+    ]
+  },
+  {
+    "objectID": "gee.html#how-can-we-estimate-the-correct-variance-of-the-ols-estimator-when-the-data-are-not-independent",
+    "href": "gee.html#how-can-we-estimate-the-correct-variance-of-the-ols-estimator-when-the-data-are-not-independent",
+    "title": "2  Generalized Estimating Equation",
+    "section": "2.3 How can we estimate the correct variance of the OLS estimator when the data are not independent?",
+    "text": "2.3 How can we estimate the correct variance of the OLS estimator when the data are not independent?\nRobust / empirical / “sandwich” variance estimator:\n\nUse actual correlations observed in the data (i.e. empirical correlations)\nRobust – for a large number of clusters it converges to the correct variance of the OLS parameter estimate, irrespective of what the true covariance V is, as long as the corrected model for the mean of Y has been specified.\nSandwich: the data driven empirical estimator is the “meat” in the sandwich between two model-based terms (“slices of bread”)\n\n\nlibrary(lmtest)\nlibrary(sandwich)\n\nlm_model &lt;- lm(value ~ sex + age, data = data)\n\n## Robust step\ncov_cl &lt;- vcovCL(lm_model, cluster = data$id)\ncov_cl\n\n            (Intercept)       sex1          age\n(Intercept)  0.87447024 -0.3160789 -0.050590613\nsex1        -0.31607886  0.5948969 -0.006492700\nage         -0.05059061 -0.0064927  0.005173734\n\nse_robust_model &lt;- coeftest(lm_model, vcov = cov_cl)\n\nse_robust_model\n\n\nt test of coefficients:\n\n             Estimate Std. Error t value  Pr(&gt;|t|)    \n(Intercept) 15.385690   0.935131 16.4530 &lt; 2.2e-16 ***\nsex1         2.321023   0.771296  3.0093  0.003279 ** \nage          0.660185   0.071929  9.1783 4.268e-15 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n\nCompare\n\n\n\nlm_model |&gt; \ntbl_regression(\n  intercept = TRUE,\n  estimate_fun = purrr::partial(style_ratio, digits = 3)) |&gt; \n  remove_row_type(\n    type = \"reference\"\n  )\n\n\n\n\n\n\n\n\n\n\n\n\n\nCharacteristic\nBeta\n95% CI\np-value\n\n\n\n\n(Intercept)\n15.39\n13.15, 17.62\n&lt;0.001\n\n\nsex\n\n\n\n\n\n\n\n\n    1\n2.321\n1.439, 3.203\n&lt;0.001\n\n\nage\n0.660\n0.466, 0.854\n&lt;0.001\n\n\n\nAbbreviation: CI = Confidence Interval\n\n\n\n\n\n\n\n\n\n\nse_robust_model |&gt; \n  tbl_regression(\n    intercept = TRUE,\n    estimate_fun = purrr::partial(style_ratio, digits = 3)\n  ) \n\n\n\n\n\n\n\nCharacteristic\nBeta\n95% CI\np-value\n\n\n\n\n(Intercept)\n15.39\n13.53, 17.24\n&lt;0.001\n\n\nsex1\n2.321\n0.792, 3.850\n0.003\n\n\nage\n0.660\n0.518, 0.803\n&lt;0.001\n\n\n\nAbbreviation: CI = Confidence Interval\n\n\n\n\n\n\n\n\n\n\nSex: difference in mean outcome between sexes at any age = between-subject comparison\n\nSE with robust &gt; SE assuming independence (0.7712956 &gt; 0.4448862)\nBetween cluster comparison is LESS precise with positive within-subject correlation\n\nAge: effect estimated within-subject.\n\nSE with robust &lt; SE independence ( 0.0719287 &gt; 0.0977589)\nWithin-cluster comparison is MORE precise with positive correlation",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Generalized Estimating Equation</span>"
+    ]
   }
 ]
