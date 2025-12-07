@@ -83,7 +83,7 @@ Suppose some paired have one 'half' missing data: are these cases still informat
 In this section, we just stop at introduce the linear mixed effects model, when using linear mixed effects model for the paired data without missing data, it equal using **paired t-test**
 
 $$
-Y_i = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
+Y_{ij} = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
 $$
 
 Where:
@@ -94,6 +94,9 @@ Where:
   - $e_{ij}$: within individual error (assumed ~ N(0,$\sigma_e^2$))
 
 The output of the model includes: fixed effect ($\beta_0,\beta_1$), random effect ($\sigma_s^2,\sigma_e^2$)
+
+![](./fig/lme_fig.png)
+
 
 ```{r}
 #| message: false
@@ -165,4 +168,170 @@ The (estimated) intraclass correlation coefficient is:
 
 $$ICC = \frac{977.78}{977.78+245.14} = 0.7995$$
 
-## Comparison between cluster
+::: {.callout-note title = "Explanation of why accounting for correlation in comparisons within a cluster increases the precision of estimation"}
+
+**Linear mixed model and paired t-test**
+
+$$
+Y_{ij} = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
+$$
+For an individual
+
+$$
+\begin{align}
+Y_{i1} - Y_{i0} &= (\beta_0 + \beta_1 X_{i1} + S_i + e_{i1}) - (\beta_0 + \beta_1 X_{i0} + S_i + e_{i0}) \\
+&= \beta_0 + \beta_1 X_{i1} + S_i + e_{i1} - \beta_0 - \beta_1 X_{i0} - S_i - e_{i0} \\
+&= \beta_1 + e_{i1} - e_{i0}
+\end{align}
+$$
+
+Averaged over all individuals:
+
+  - $\widehat{\beta} = \frac{\sum\nolimits_{N}^{i = 1} (Y_{i1} - Y_{i0})}{N} = \overline{Y_1} - \overline{Y_0}$
+
+  - $Var(\widehat{\beta}) = \frac{2\sigma_e^2}{N}$
+  
+**Two samples t-test**  
+
+  - $\widehat{\beta} = \frac{\sum\nolimits_{i = 1}^{N} (Y_{i1} - Y_{i0})}{N} = \overline{Y_1} - \overline{Y_0}$
+    
+  - $Var(\widehat{\beta}) = Var(\overline{Y_1}) + Var(\overline{Y_0})$
+
+Variance in each group is the average of the total variation of observations about treatment group mean: $Var(\overline{Y_1}) = \frac{(\sigma_s^2 + \sigma_e^2)}{N}$.
+
+So $Var(\widehat{\beta}) = 2 \times \frac{(\sigma_s^2 + \sigma_e^2)}{N}$
+  
+=> The variance will be higher and the precision of estimation will be lower  
+  
+:::
+
+## Comparison between clusters
+
+Cluster randomize trials: All members of each cluster receive the same treatment
+
+  -  Anti-malarial trial (Lec 1): Cluster = village, treatment given to all individuals in a village
+
+  - Comparison of treatment involves between cluster comparisons
+  
+   - Analysis estimates difference between (population) mean of treatment and control groups
+
+**Marginal models** 
+
+Consider the treatment group only in a cluster RCT; 
+
+i refers to a cluster, $Y_{ij}$ is the outcome for a cluster i with $j^{th}$ measurement of outcome
+
+$$
+\begin{align}
+E[Y_{ij}] = \overline{Y_i} = \mu \quad\quad  Var(Y_{ij}) = \sigma_T^2 \quad\quad Corr(Y_{ij},Y_{ik}) = \rho
+\end{align}
+$$
+
+This is called a marginal model or population average model which specifies only the **mean, variance, and covariance**
+
+Variance of cluster mean for a cluster of size $n_i$:
+
+$Var(\overline{Y_i}) = \frac{\sigma^2_T (1+(n_i - 1)\rho)}{n_i}$
+
+Each cluster mean estimates $\mu$
+
+$$
+\begin{align}
+\widehat{\mu} = \frac{\sum\nolimits_{i = 1}^{N} w_i \overline{Y_i}}{\sum\nolimits_{i = 1}^{N} w_i} \quad where \ w_i = \frac{n_i}{1+(n_i-1)\rho}
+\end{align}
+$$
+
+The generalized estimating equations (GEE) can be written as
+
+$$
+\sum\nolimits_{i = 1}^{N} w_i(\overline{Y_i} - \widehat{\mu}) = 0
+$$
+
+::: {.callout-note title = "Conclusion"}
+
+  -  GEE estimate population mean of each treatment arm, this model take correlation structure into account but treats it as a nuisance 
+
+  - Variance of sample mean INCREASES with (positively) correlated observations (LESS precise), see $Var(\overline{Y_i}) = \frac{\sigma^2_T (1+(n_i - 1)\rho)}{n_i}$, $\rho = Corr(Y_{ij},Y_{ik})$ 
+  
+  - Can be used to estimate population average odds ratios, rate ratios, etc.
+  
+:::
+
+### Example data
+
+The Melbourne Water Quality Study was undertaken to assess whether filtering the household water supply for viruses, bacteria and protozoa was associated with a reduced burden of gastroenteritis. The study was a cluster-randomised double blind clinical trial comparing real versus sham water filters. The primary outcome was gastroenteritis during a 68 week follow-up period.
+
+We will use a subset of the data consisting of 2437 individuals in 533 families. Because we have so far only explored methods for continuous data, we will examine a secondary outcome measure – total water consumption. 
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+#| fig-cap: The plot shows that the log of each house's water consumption was randomly assigned to the treatment and control groups. In this plot, we see the first 20 houses of the dataset.
+
+water <- read_dta("./data/water.dta")
+
+water$logwater <- log(water$watertot)
+
+water |> 
+  mutate(filter = factor(filter,labels = c("Control","Filter"))) |> 
+  filter(house <= 20) |> 
+  ggplot(aes(x = as.factor(house), y = logwater))+
+  geom_point() +
+  facet_wrap(~filter)+
+  labs(x = "House", y  = "Log of total water consumption")+
+  theme_bw()
+```
+
+Use a GEE approach to estimate the effect of the filter on water consumption
+
+Note that the `corstr` argument will be explained more detail in @sec-gee
+
+```{r}
+library(geepack)
+
+fit.geeglm2 <- geeglm(logwater ~ filter,
+                      data = water, 
+                      id = house, 
+                      corstr = "exchangeable")
+summary(fit.geeglm2)
+
+confint.default(fit.geeglm2)
+```
+
+The output of the model (on the logscale of water consumption):
+
+  - The estimated treatment effect 0.061 (-0.013,0.135)
+  
+  - The standard error 0.038
+
+We need to exponentiate the estimation, using `gtsummary` package to provide the summary table
+
+```{r}
+library(gtsummary)
+
+fit.geeglm2 |>
+  tbl_regression(
+    intercept = TRUE,
+    exponentiate = TRUE,
+    tidy_fun = broom.mixed::tidy,
+    estimate_fun = purrr::partial(style_ratio, digits = 2)
+  )
+```
+
+=> That means the difference in the real filter group is 6% greater than in the sham filter group (with 95% CI from a 1% decrease to a 14% increase). The p-value is p=0.11. So there is very minimal evidence of an effect of the real filter on changing mean water consumption.
+
+## Summary {.unnumbered}
+
+Correlation structure of your data can impact on your standard error estimates
+
+  - When the comparison is within cluster/individual like in a cross-over trial, accounting for
+clustering improve precision (smaller standard errors)
+
+  - When the comparison is between clusters like in a cluster RCT, modelling clustering
+reduces precision
+
+Linear mixed models (conditional models) produce estimates taking individual variation into account
+
+GEE models (marginal models) produced population average estimates, but need many clusters
+
+

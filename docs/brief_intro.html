@@ -213,7 +213,11 @@ window.Quarto = {
   <li><a href="#consider-the-paired-structure" id="toc-consider-the-paired-structure" class="nav-link" data-scroll-target="#consider-the-paired-structure"><span class="header-section-number">1.1.3</span> Consider the paired structure</a></li>
   <li><a href="#when-some-pairs-have-missing-data" id="toc-when-some-pairs-have-missing-data" class="nav-link" data-scroll-target="#when-some-pairs-have-missing-data"><span class="header-section-number">1.1.4</span> When some pairs have missing data ?</a></li>
   </ul></li>
-  <li><a href="#comparison-between-cluster" id="toc-comparison-between-cluster" class="nav-link" data-scroll-target="#comparison-between-cluster"><span class="header-section-number">1.2</span> Comparison between cluster</a></li>
+  <li><a href="#comparison-between-clusters" id="toc-comparison-between-clusters" class="nav-link" data-scroll-target="#comparison-between-clusters"><span class="header-section-number">1.2</span> Comparison between clusters</a>
+  <ul class="collapse">
+  <li><a href="#example-data" id="toc-example-data" class="nav-link" data-scroll-target="#example-data"><span class="header-section-number">1.2.1</span> Example data</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -407,7 +411,7 @@ mean difference
 <p>Suppose some paired have one ‘half’ missing data: are these cases still informative?</p>
 <p>In this section, we just stop at introduce the linear mixed effects model, when using linear mixed effects model for the paired data without missing data, it equal using <strong>paired t-test</strong></p>
 <p><span class="math display">\[
-Y_i = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
+Y_{ij} = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
 \]</span></p>
 <p>Where:</p>
 <ul>
@@ -417,6 +421,7 @@ Y_i = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
 <li><span class="math inline">\(e_{ij}\)</span>: within individual error (assumed ~ N(0,<span class="math inline">\(\sigma_e^2\)</span>))</li>
 </ul>
 <p>The output of the model includes: fixed effect (<span class="math inline">\(\beta_0,\beta_1\)</span>), random effect (<span class="math inline">\(\sigma_s^2,\sigma_e^2\)</span>)</p>
+<p><img src="./fig/lme_fig.png" class="img-fluid"></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)                  <span class="co"># mixed effects models</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -498,23 +503,23 @@ trttreatment   8.124216  36.87578</code></pre>
 <span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div id="gsecxzuqfr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#gsecxzuqfr table {
+<div id="irjwyxiply" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#irjwyxiply table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#gsecxzuqfr thead, #gsecxzuqfr tbody, #gsecxzuqfr tfoot, #gsecxzuqfr tr, #gsecxzuqfr td, #gsecxzuqfr th {
+#irjwyxiply thead, #irjwyxiply tbody, #irjwyxiply tfoot, #irjwyxiply tr, #irjwyxiply td, #irjwyxiply th {
   border-style: none;
 }
 
-#gsecxzuqfr p {
+#irjwyxiply p {
   margin: 0;
   padding: 0;
 }
 
-#gsecxzuqfr .gt_table {
+#irjwyxiply .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -540,12 +545,12 @@ trttreatment   8.124216  36.87578</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_caption {
+#irjwyxiply .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#gsecxzuqfr .gt_title {
+#irjwyxiply .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -557,7 +562,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-bottom-width: 0;
 }
 
-#gsecxzuqfr .gt_subtitle {
+#irjwyxiply .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -569,7 +574,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-top-width: 0;
 }
 
-#gsecxzuqfr .gt_heading {
+#irjwyxiply .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -581,13 +586,13 @@ trttreatment   8.124216  36.87578</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_bottom_border {
+#irjwyxiply .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_col_headings {
+#irjwyxiply .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -602,7 +607,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_col_heading {
+#irjwyxiply .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -622,7 +627,7 @@ trttreatment   8.124216  36.87578</code></pre>
   overflow-x: hidden;
 }
 
-#gsecxzuqfr .gt_column_spanner_outer {
+#irjwyxiply .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -634,15 +639,15 @@ trttreatment   8.124216  36.87578</code></pre>
   padding-right: 4px;
 }
 
-#gsecxzuqfr .gt_column_spanner_outer:first-child {
+#irjwyxiply .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#gsecxzuqfr .gt_column_spanner_outer:last-child {
+#irjwyxiply .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#gsecxzuqfr .gt_column_spanner {
+#irjwyxiply .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -654,11 +659,11 @@ trttreatment   8.124216  36.87578</code></pre>
   width: 100%;
 }
 
-#gsecxzuqfr .gt_spanner_row {
+#irjwyxiply .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#gsecxzuqfr .gt_group_heading {
+#irjwyxiply .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -684,7 +689,7 @@ trttreatment   8.124216  36.87578</code></pre>
   text-align: left;
 }
 
-#gsecxzuqfr .gt_empty_group_heading {
+#irjwyxiply .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -699,15 +704,15 @@ trttreatment   8.124216  36.87578</code></pre>
   vertical-align: middle;
 }
 
-#gsecxzuqfr .gt_from_md > :first-child {
+#irjwyxiply .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#gsecxzuqfr .gt_from_md > :last-child {
+#irjwyxiply .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#gsecxzuqfr .gt_row {
+#irjwyxiply .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -726,7 +731,7 @@ trttreatment   8.124216  36.87578</code></pre>
   overflow-x: hidden;
 }
 
-#gsecxzuqfr .gt_stub {
+#irjwyxiply .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -739,7 +744,7 @@ trttreatment   8.124216  36.87578</code></pre>
   padding-right: 5px;
 }
 
-#gsecxzuqfr .gt_stub_row_group {
+#irjwyxiply .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -753,15 +758,15 @@ trttreatment   8.124216  36.87578</code></pre>
   vertical-align: top;
 }
 
-#gsecxzuqfr .gt_row_group_first td {
+#irjwyxiply .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#gsecxzuqfr .gt_row_group_first th {
+#irjwyxiply .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#gsecxzuqfr .gt_summary_row {
+#irjwyxiply .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -771,16 +776,16 @@ trttreatment   8.124216  36.87578</code></pre>
   padding-right: 5px;
 }
 
-#gsecxzuqfr .gt_first_summary_row {
+#irjwyxiply .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_first_summary_row.thick {
+#irjwyxiply .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#gsecxzuqfr .gt_last_summary_row {
+#irjwyxiply .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -790,7 +795,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_grand_summary_row {
+#irjwyxiply .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -800,7 +805,7 @@ trttreatment   8.124216  36.87578</code></pre>
   padding-right: 5px;
 }
 
-#gsecxzuqfr .gt_first_grand_summary_row {
+#irjwyxiply .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -810,7 +815,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_last_grand_summary_row_top {
+#irjwyxiply .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -820,11 +825,11 @@ trttreatment   8.124216  36.87578</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_striped {
+#irjwyxiply .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#gsecxzuqfr .gt_table_body {
+#irjwyxiply .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -833,7 +838,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_footnotes {
+#irjwyxiply .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -847,7 +852,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_footnote {
+#irjwyxiply .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -856,7 +861,7 @@ trttreatment   8.124216  36.87578</code></pre>
   padding-right: 5px;
 }
 
-#gsecxzuqfr .gt_sourcenotes {
+#irjwyxiply .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -870,7 +875,7 @@ trttreatment   8.124216  36.87578</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gsecxzuqfr .gt_sourcenote {
+#irjwyxiply .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -878,72 +883,72 @@ trttreatment   8.124216  36.87578</code></pre>
   padding-right: 5px;
 }
 
-#gsecxzuqfr .gt_left {
+#irjwyxiply .gt_left {
   text-align: left;
 }
 
-#gsecxzuqfr .gt_center {
+#irjwyxiply .gt_center {
   text-align: center;
 }
 
-#gsecxzuqfr .gt_right {
+#irjwyxiply .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#gsecxzuqfr .gt_font_normal {
+#irjwyxiply .gt_font_normal {
   font-weight: normal;
 }
 
-#gsecxzuqfr .gt_font_bold {
+#irjwyxiply .gt_font_bold {
   font-weight: bold;
 }
 
-#gsecxzuqfr .gt_font_italic {
+#irjwyxiply .gt_font_italic {
   font-style: italic;
 }
 
-#gsecxzuqfr .gt_super {
+#irjwyxiply .gt_super {
   font-size: 65%;
 }
 
-#gsecxzuqfr .gt_footnote_marks {
+#irjwyxiply .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#gsecxzuqfr .gt_asterisk {
+#irjwyxiply .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#gsecxzuqfr .gt_indent_1 {
+#irjwyxiply .gt_indent_1 {
   text-indent: 5px;
 }
 
-#gsecxzuqfr .gt_indent_2 {
+#irjwyxiply .gt_indent_2 {
   text-indent: 10px;
 }
 
-#gsecxzuqfr .gt_indent_3 {
+#irjwyxiply .gt_indent_3 {
   text-indent: 15px;
 }
 
-#gsecxzuqfr .gt_indent_4 {
+#irjwyxiply .gt_indent_4 {
   text-indent: 20px;
 }
 
-#gsecxzuqfr .gt_indent_5 {
+#irjwyxiply .gt_indent_5 {
   text-indent: 25px;
 }
 
-#gsecxzuqfr .katex-display {
+#irjwyxiply .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#gsecxzuqfr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#irjwyxiply div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1044,11 +1049,671 @@ trttreatment   8.124216  36.87578</code></pre>
 </ul>
 <p>The (estimated) intraclass correlation coefficient is:</p>
 <p><span class="math display">\[ICC = \frac{977.78}{977.78+245.14} = 0.7995\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Explanation of why accounting for correlation in comparisons within a cluster increases the precision of estimation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Explanation of why accounting for correlation in comparisons within a cluster increases the precision of estimation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Linear mixed model and paired t-test</strong></p>
+<p><span class="math display">\[
+Y_{ij} = \beta_0 + \beta_1 X_{ij} + S_i + e_{ij}
+\]</span> For an individual</p>
+<p><span class="math display">\[
+\begin{align}
+Y_{i1} - Y_{i0} &amp;= (\beta_0 + \beta_1 X_{i1} + S_i + e_{i1}) - (\beta_0 + \beta_1 X_{i0} + S_i + e_{i0}) \\
+&amp;= \beta_0 + \beta_1 X_{i1} + S_i + e_{i1} - \beta_0 - \beta_1 X_{i0} - S_i - e_{i0} \\
+&amp;= \beta_1 + e_{i1} - e_{i0}
+\end{align}
+\]</span></p>
+<p>Averaged over all individuals:</p>
+<ul>
+<li><p><span class="math inline">\(\widehat{\beta} = \frac{\sum\nolimits_{N}^{i = 1} (Y_{i1} - Y_{i0})}{N} = \overline{Y_1} - \overline{Y_0}\)</span></p></li>
+<li><p><span class="math inline">\(Var(\widehat{\beta}) = \frac{2\sigma_e^2}{N}\)</span></p></li>
+</ul>
+<p><strong>Two samples t-test</strong></p>
+<ul>
+<li><p><span class="math inline">\(\widehat{\beta} = \frac{\sum\nolimits_{i = 1}^{N} (Y_{i1} - Y_{i0})}{N} = \overline{Y_1} - \overline{Y_0}\)</span></p></li>
+<li><p><span class="math inline">\(Var(\widehat{\beta}) = Var(\overline{Y_1}) + Var(\overline{Y_0})\)</span></p></li>
+</ul>
+<p>Variance in each group is the average of the total variation of observations about treatment group mean: <span class="math inline">\(Var(\overline{Y_1}) = \frac{(\sigma_s^2 + \sigma_e^2)}{N}\)</span>.</p>
+<p>So <span class="math inline">\(Var(\widehat{\beta}) = 2 \times \frac{(\sigma_s^2 + \sigma_e^2)}{N}\)</span></p>
+<p>=&gt; The variance will be higher and the precision of estimation will be lower</p>
+</div>
+</div>
 </section>
 </section>
 </section>
-<section id="comparison-between-cluster" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="comparison-between-cluster"><span class="header-section-number">1.2</span> Comparison between cluster</h2>
+<section id="comparison-between-clusters" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="comparison-between-clusters"><span class="header-section-number">1.2</span> Comparison between clusters</h2>
+<p>Cluster randomize trials: All members of each cluster receive the same treatment</p>
+<ul>
+<li><p>Anti-malarial trial (Lec 1): Cluster = village, treatment given to all individuals in a village</p></li>
+<li><p>Comparison of treatment involves between cluster comparisons</p></li>
+<li><p>Analysis estimates difference between (population) mean of treatment and control groups</p></li>
+</ul>
+<p><strong>Marginal models</strong></p>
+<p>Consider the treatment group only in a cluster RCT;</p>
+<p>i refers to a cluster, <span class="math inline">\(Y_{ij}\)</span> is the outcome for a cluster i with <span class="math inline">\(j^{th}\)</span> measurement of outcome</p>
+<p><span class="math display">\[
+\begin{align}
+E[Y_{ij}] = \overline{Y_i} = \mu \quad\quad  Var(Y_{ij}) = \sigma_T^2 \quad\quad Corr(Y_{ij},Y_{ik}) = \rho
+\end{align}
+\]</span></p>
+<p>This is called a marginal model or population average model which specifies only the <strong>mean, variance, and covariance</strong></p>
+<p>Variance of cluster mean for a cluster of size <span class="math inline">\(n_i\)</span>:</p>
+<p><span class="math inline">\(Var(\overline{Y_i}) = \frac{\sigma^2_T (1+(n_i - 1)\rho)}{n_i}\)</span></p>
+<p>Each cluster mean estimates <span class="math inline">\(\mu\)</span></p>
+<p><span class="math display">\[
+\begin{align}
+\widehat{\mu} = \frac{\sum\nolimits_{i = 1}^{N} w_i \overline{Y_i}}{\sum\nolimits_{i = 1}^{N} w_i} \quad where \ w_i = \frac{n_i}{1+(n_i-1)\rho}
+\end{align}
+\]</span></p>
+<p>The generalized estimating equations (GEE) can be written as</p>
+<p><span class="math display">\[
+\sum\nolimits_{i = 1}^{N} w_i(\overline{Y_i} - \widehat{\mu}) = 0
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Conclusion">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conclusion
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>GEE estimate population mean of each treatment arm, this model take correlation structure into account but treats it as a nuisance</p></li>
+<li><p>Variance of sample mean INCREASES with (positively) correlated observations (LESS precise), see <span class="math inline">\(Var(\overline{Y_i}) = \frac{\sigma^2_T (1+(n_i - 1)\rho)}{n_i}\)</span>, <span class="math inline">\(\rho = Corr(Y_{ij},Y_{ik})\)</span></p></li>
+<li><p>Can be used to estimate population average odds ratios, rate ratios, etc.</p></li>
+</ul>
+</div>
+</div>
+<section id="example-data" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="example-data"><span class="header-section-number">1.2.1</span> Example data</h3>
+<p>The Melbourne Water Quality Study was undertaken to assess whether filtering the household water supply for viruses, bacteria and protozoa was associated with a reduced burden of gastroenteritis. The study was a cluster-randomised double blind clinical trial comparing real versus sham water filters. The primary outcome was gastroenteritis during a 68 week follow-up period.</p>
+<p>We will use a subset of the data consisting of 2437 individuals in 533 families. Because we have so far only explored methods for continuous data, we will examine a secondary outcome measure – total water consumption.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>water <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"./data/water.dta"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>water<span class="sc">$</span>logwater <span class="ot">&lt;-</span> <span class="fu">log</span>(water<span class="sc">$</span>watertot)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>water <span class="sc">|&gt;</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">filter =</span> <span class="fu">factor</span>(filter,<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Control"</span>,<span class="st">"Filter"</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(house <span class="sc">&lt;=</span> <span class="dv">20</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.factor</span>(house), <span class="at">y =</span> logwater))<span class="sc">+</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>filter)<span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"House"</span>, <span class="at">y  =</span> <span class="st">"Log of total water consumption"</span>)<span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="brief_intro_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="960"></p>
+<figcaption>The plot shows that the log of each house’s water consumption was randomly assigned to the treatment and control groups. In this plot, we see the first 20 houses of the dataset.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Use a GEE approach to estimate the effect of the filter on water consumption</p>
+<p>Note that the <code>corstr</code> argument will be explained more detail in <span class="quarto-unresolved-ref">?sec-gee</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>fit.geeglm2 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(logwater <span class="sc">~</span> filter,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> water, </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">id =</span> house, </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">corstr =</span> <span class="st">"exchangeable"</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit.geeglm2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+geeglm(formula = logwater ~ filter, data = water, id = house, 
+    corstr = "exchangeable")
+
+ Coefficients:
+            Estimate Std.err     Wald Pr(&gt;|W|)    
+(Intercept)  0.99718 0.02821 1249.198   &lt;2e-16 ***
+filter       0.06083 0.03781    2.588    0.108    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation structure = exchangeable 
+Estimated Scale Parameters:
+
+            Estimate Std.err
+(Intercept)   0.3878 0.01943
+  Link = identity 
+
+Estimated Correlation Parameters:
+      Estimate Std.err
+alpha   0.3236 0.02639
+Number of clusters:   533  Maximum cluster size: 9 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint.default</span>(fit.geeglm2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               2.5 % 97.5 %
+(Intercept)  0.94189 1.0525
+filter      -0.01328 0.1349</code></pre>
+</div>
+</div>
+<p>The output of the model (on the logscale of water consumption):</p>
+<ul>
+<li><p>The estimated treatment effect 0.061 (-0.013,0.135)</p></li>
+<li><p>The standard error 0.038</p></li>
+</ul>
+<p>We need to exponentiate the estimation, using <code>gtsummary</code> package to provide the summary table</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>fit.geeglm2 <span class="sc">|&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tbl_regression</span>(</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">exponentiate =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">tidy_fun =</span> broom.mixed<span class="sc">::</span>tidy,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">estimate_fun =</span> purrr<span class="sc">::</span><span class="fu">partial</span>(style_ratio, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="qtljcajwgj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qtljcajwgj table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qtljcajwgj thead, #qtljcajwgj tbody, #qtljcajwgj tfoot, #qtljcajwgj tr, #qtljcajwgj td, #qtljcajwgj th {
+  border-style: none;
+}
+
+#qtljcajwgj p {
+  margin: 0;
+  padding: 0;
+}
+
+#qtljcajwgj .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qtljcajwgj .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qtljcajwgj .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qtljcajwgj .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qtljcajwgj .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qtljcajwgj .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qtljcajwgj .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qtljcajwgj .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qtljcajwgj .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qtljcajwgj .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qtljcajwgj .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qtljcajwgj .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qtljcajwgj .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qtljcajwgj .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qtljcajwgj .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qtljcajwgj .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qtljcajwgj .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qtljcajwgj .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qtljcajwgj .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qtljcajwgj .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qtljcajwgj .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qtljcajwgj .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qtljcajwgj .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qtljcajwgj .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qtljcajwgj .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qtljcajwgj .gt_left {
+  text-align: left;
+}
+
+#qtljcajwgj .gt_center {
+  text-align: center;
+}
+
+#qtljcajwgj .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qtljcajwgj .gt_font_normal {
+  font-weight: normal;
+}
+
+#qtljcajwgj .gt_font_bold {
+  font-weight: bold;
+}
+
+#qtljcajwgj .gt_font_italic {
+  font-style: italic;
+}
+
+#qtljcajwgj .gt_super {
+  font-size: 65%;
+}
+
+#qtljcajwgj .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qtljcajwgj .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qtljcajwgj .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qtljcajwgj .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qtljcajwgj .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qtljcajwgj .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qtljcajwgj .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#qtljcajwgj .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#qtljcajwgj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="estimate" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>exp(Beta)</strong></th>
+<th id="conf.low" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong></th>
+<th id="p.value" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">(Intercept)</td>
+<td class="gt_row gt_center" headers="estimate">2.71</td>
+<td class="gt_row gt_center" headers="conf.low">2.56, 2.86</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Randomised group (filter/control)</td>
+<td class="gt_row gt_center" headers="estimate">1.06</td>
+<td class="gt_row gt_center" headers="conf.low">0.99, 1.14</td>
+<td class="gt_row gt_center" headers="p.value">0.11</td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_sourcenotes odd">
+<td colspan="4" class="gt_sourcenote">Abbreviation: CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>=&gt; That means the difference in the real filter group is 6% greater than in the sham filter group (with 95% CI from a 1% decrease to a 14% increase). The p-value is p=0.11. So there is very minimal evidence of an effect of the real filter on changing mean water consumption.</p>
+</section>
+</section>
+<section id="summary" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="summary">Summary</h2>
+<p>Correlation structure of your data can impact on your standard error estimates</p>
+<ul>
+<li><p>When the comparison is within cluster/individual like in a cross-over trial, accounting for clustering improve precision (smaller standard errors)</p></li>
+<li><p>When the comparison is between clusters like in a cluster RCT, modelling clustering reduces precision</p></li>
+</ul>
+<p>Linear mixed models (conditional models) produce estimates taking individual variation into account</p>
+<p>GEE models (marginal models) produced population average estimates, but need many clusters</p>
 
 
 </section>
