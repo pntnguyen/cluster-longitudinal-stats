@@ -1,3 +1,332 @@
 # Linear mixed model
 
+::: {.callout-note title = "Recap"}
+
+Marginal model:
+  
+  - Focus attention on the model for the mean, treat correlation structure as a “nuisance”
+  
+  - Validity of inferences about regression parameters protected by using “robust” SEs (for large # clusters)
+  
+  - Useful mainly when data are balanced (number of measurements similar across clusters)
+  
+Linear Mixed Models: models the entire joint distribution of the observations, including covariance structure  
+
+  - “Full probability model” : Likelihood-based estimation
+  
+  - Estimators fully efficient when model is correct (i.e. ‘smallest possible SEs’)
+  
+  - Useful when variance components or correlation structure is of interest
+  
+:::  
+
+## Data
+
+Longitudinal data: Potthoff and Roy (1964):
+
+  - Measured distance from centre of the pituitary gland to the pterygomaxillary fissure by x-ray (important in orthodontics)
+  
+  - Measured for boys and girls with aim to understand changes with age and by sex
+
+  - Measured at ages 8, 10, 12, 14
+  
+  - Rescaled to show time since age 8
+  
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+
+library(mice)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+data <- potthoffroy |> 
+  pivot_longer(cols = -c(id,sex)) |> 
+  mutate(age = str_extract(name,'\\d+') |> as.numeric(),
+         sex = factor(sex,labels = c("Female","Male")),
+         time = age-8,
+         y = value)
+
+data |> 
+  ggplot(aes(x = time, y = y))+
+  geom_line(aes(group = id))+
+  geom_point()+
+  facet_wrap(~sex)+
+  labs(x = "Years since age 8", y = "Distance")+
+  theme_bw()
+
+```
+  
+  
+## Random intercepts model  
+  
+In this example, we only consider the male group, and focus on within cluster comparison (change over time). In linear mixed model, we extend to compare the variation between individuals or subjects by adding one level to the simple linear regression $Y_j = \beta_0 + \beta_1 t_j$.
+
+The "two level" or "hierarchical" model:
+
+  - Level 1: Describes variation within individuals
+  
+      - Straight line (linear regression) for each subject
+    
+      - $\beta_{0i}$ is subject-specific intercept
+    
+      - $\beta_{1}$ is the common slope
+    
+  -  Level 2: Describes variation in intercepts between individuals
+  
+      - $\beta_{0i} = \beta_0 + b_{0i}$ with $b_{0i} \sim N(0,\sigma^2_{b0})$
+    
+      - $\beta_{0}$ is average intercept  
+
+The combined model: $Y_{ij} = (\beta_0 + b_{0i}) + \beta_1 t_{ij} + e_{ij}, \ e_{ij} \sim N(0,\sigma^2_e)$
+
+Then the marginal model for Y will be:
+
+  - $[Y_{ij}] = \beta_0 + \beta_1 t_{ij}$
+  
+  - $Var(Y_{ij}) = \sigma^2_{b0} + \sigma^2_e$
+  
+  - $Corr(Y_{ij},Y_{ik}) = \frac{\sigma^2_{b0}}{\sigma^2_{b0} + \sigma^2_{e}}$
+
+In words:
+
+  - Average growth is linear with slope β1
+
+  - Variances are constant over time (and equal to the sum of the variance of the intercept and the error)
+
+  - Correlation between different observations from the same individuals is constant (exchangeable correlation structure)
+
+**R code**
+
+```{r}
+library(lme4)
+
+random_intecept_model <- lmer(y ~ time + (1 | id),data = data, subset = (sex == "Male"))
+
+summary(random_intecept_model)
+```
+  
+Plotting how random intercept model fit the data
+
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+
+data |> 
+  filter(sex == "Male") |> 
+  mutate(fitted = predict(random_intecept_model)) |> 
+  ggplot(aes(x = time, y = fitted))+
+  geom_line(aes(group = id))+
+  geom_point(aes(y = value))+
+  labs(x = "Years since age 8", y = "Distance")+
+  theme_minimal()
+```
+
+Summarise the output
+
+```{r}
+library(gtsummary)
+```
+
+```{r}
+
+random_intecept_model |> 
+    tbl_regression(
+      intercept = TRUE,
+      tidy_fun = broom.mixed::tidy,
+      estimate_fun = purrr::partial(style_ratio, digits = 3)
+    )
+```
+
+Model output:
+
+  - $\beta_0 = 22.62$
+  
+  - $\beta_1 = 0.784$
+  
+  - $b_{0i} \sim N(0,\sigma^2_{b0}), \ SD: \sigma_{b0} = 1.625, \ \sigma^2_{b0} = 2.641 $
+  
+  - $e_{ij} \sim N(0,\sigma^2_e), \ SD: \sigma_e = \ 1.678, \ \sigma^2_e = 2.816$
+  
+## Random intercepts and slopes model
+
+Based on random intercepts models $Y_{ij} = (\beta_0 + b_{0i}) + \beta_1 t_{ij} + e_{ij}$. We extend the slopes $\beta_1 = \beta_1 + b_{1i}$:
+
+  -  Level 1: Describes variation within individuals
+  
+      - $Y_ij = \beta_{0i} + \beta_{1i}t_{ij} + e_{ij}$
+    
+      - Straight line (linear regression) for each subject
+    
+      - $\beta_{0i}$ is individual-specific intercept
+
+      - $\beta_{1i}$ is the individual-specific slope
+    
+  -  Level 2: Describes variation in intercepts AND slopes between individuals
+  
+      - Also allows correlation between them
+    
+      - $\beta_{0i} = \beta_{00}+b_{0i}$, with $b_{0i} \sim N(0,\sigma^2_{b0})$
+
+      - $\beta_{1i} = \beta_{10}+b_{1i}$, with $b_{0i} \sim N(0,\sigma^2_{b1})$
+  
+      - $Corr(b_{0i},b_{1i}) = \rho_b$
+  
+Combined model: $Y_{ij} = (\beta_0 + b_{0i}) + (\beta_1 + b_{1i})t_{ij} + e_{ij}, \ e_{ij} \sim N(0,\sigma^2_e)$  
+
+**R code**
+
+```{r}
+random_slope_intecept_model <- lmer(y ~ time + (1 + time | id),data = data, 
+                                    subset = (sex == "Male"))
+
+summary(random_slope_intecept_model)
+```
+
+Plotting how random intercept model fit the data
+
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+
+data |> 
+  filter(sex == "Male") |> 
+  mutate(fitted = predict(random_slope_intecept_model)) |> 
+  ggplot(aes(x = time, y = fitted))+
+  geom_line(aes(group = id))+
+  geom_point(aes(y = value))+
+  labs(x = "Years since age 8", y = "Distance")+
+  theme_minimal()
+```
+
+Summarise the output
+
+```{r}
+random_slope_intecept_model |> 
+    tbl_regression(
+      intercept = TRUE,
+      tidy_fun = broom.mixed::tidy,
+      estimate_fun = purrr::partial(style_ratio, digits = 3)
+    )
+```
+
+::: {.callout-note title = "Model output and interpretation"}
+
+  - $\beta_0 = 22.62$: Average value at age 8 = 22.6
+  
+  - $\beta_1 = 0.784$: Average rate of growth is 0.784 mm/ year
+  
+  - $b_{0i} \sim N(0,\sigma^2_{b0}), \ SD: \sigma_{b0} = \ 1.745, \sigma^2_{b0} = 3.046$: Variations in intercepts between individuals
+  
+  - $b_{1i} \sim N(0,\sigma^2_{b1}), \ SD: \sigma_{b1} = \ 0.189, \sigma^2_{b1} = 0.036$: Variations in slopes between individuals
+  
+  - $Corr(b_{0i},b_{1i}) = \rho_b = -0.339$: Correlation between value at age 8 and later time points is -0.339 
+  
+  - $e_{ij} \sim N(0,\sigma^2_e), \ SD: \sigma_e = \ 1.609, \sigma^2_e = 2.589$
+
+:::  
+  
+## Differences between groups
+
+In the previous section, we only consider the male group, and focus on within cluster comparison (change over time). In this section, we will explore the following question:
+
+  - Is average rate of growth the same for males and females?
+  
+  - What is the variability in rate of growth within each sex?
+  
+  - Is rate of growth correlated with size/distance at age 8?
+
+We fit random intercepts and slopes model, and allow subject-specific intercept and slope to depend on sex
+
+  - Level 1: Describes variation within individuals
+  
+      - $Y_{ij} = \beta_{0i} + \beta_{1i}t_{ij} + e_{ij}$
+
+  - Level 2: Describes variation in intercepts and slopes between individuals
+  
+      - $\beta_{0i} = \beta_{00} + b_{0i} + \beta_{01}Sex$
+      
+      - $\beta_{1i} = \beta_{10} + b_{1i} + \beta_{11}Sex$
+
+Combined model: $Y_{ij} = (\beta_{00} + b_{0i} + \beta_{01}Sex) + (\beta_{10} + b_{1i} + \beta_{11}Sex)t_{ij} + e_{ij}$
+
+**R code**
+
+```{r}
+random_slope_intecept_model2 <- lmer(y ~ sex*time + (1 + time | id),data = data)
+
+summary(random_slope_intecept_model2)
+```
+
+**Plotting**
+
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+
+data |> 
+  mutate(fitted = predict(random_slope_intecept_model2)) |> 
+  ggplot(aes(x = time, y = fitted))+
+  geom_line(aes(group = id))+
+  geom_point(aes(y = value))+
+  facet_wrap(~sex)+
+  labs(x = "Years since age 8", y = "Distance")+
+  theme_bw()
+```
+
+Summary table
+
+```{r}
+random_slope_intecept_model2 |> 
+    tbl_regression(
+      intercept = TRUE,
+      tidy_fun = broom.mixed::tidy,
+      estimate_fun = purrr::partial(style_ratio, digits = 3)
+    )
+```
+
+
+Model
+
+$$Y_{ij} = (\beta_{00} + b_{0i} + \beta_{01}Sex) + (\beta_{10} + b_{1i} + \beta_{11}Sex)t_{ij} + e_{ij}$$
+
+::: {.callout-note title = "Model output and interpretation"}
+
+  - $\beta_{11} = 0.305$: Different in growth rate of Male vs Female
+  
+  - $\beta_{00} + \beta_{10} = 0.48$: Average growth rates when sex = 0 (Female): 0.48, Male (0.48+0.3) = 0.78  
+  
+  - $b_{1i} \sim N(0,\sigma^2_{b1}), \ SD: \sigma_{b1} = \ 0.18, \sigma^2_{b1} = 0.03$:
+  
+      - 95% of Female have growth rate 0.48 +/- 1.96*0.18 = 0.13 to 0.83
+      
+      - 95% of Male have growth rate 0.78 +/- 1.96*0.18 = 0.43 to 1.13
+  
+  - $Corr(b_{0i},b_{1i}) = \rho_b = -0.09$: Little correlation between initial size at age 8 and growth rate between ages 8-14 years (assumes common correlation for males and females)
+
+:::  
+
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+#| fig-cap: The lines that connected the points are the raw data. The bold lines are the outcome of the model
+
+
+data |> 
+  mutate(fitted = predict(random_slope_intecept_model2),
+         pred.pop = predict(
+           random_slope_intecept_model2,
+           re.form = NA   
+         )) |> 
+  ggplot(aes(x = time))+
+  geom_line(aes(y = pred.pop,group = id),size = 1)+
+  geom_line(aes(y = value,group = id),alpha = .5)+
+  geom_point(aes(y = value))+
+  facet_wrap(~sex)+
+  labs(x = "Years since age 8", y = "Distance")+
+  theme_bw()
+```
+
 

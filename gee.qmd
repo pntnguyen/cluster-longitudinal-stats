@@ -1,14 +1,14 @@
-# Generalized Estimating Equation {#sec-gee}
+# Generalized Estimating Equation
 
 ## Data description
 
 Potthoff and Roy growth data:
 
-  - Growth measurements for 27 children (11 girls and 16 boys)
-  
-  - Distance (in mm) from the centre of the pituitary gland to the pterygo-maxillary fissure recorded at ages 8, 10, 12 and 14 years.
+-   Growth measurements for 27 children (11 girls and 16 boys)
 
-  - Interested in the differences between males and females in pattern of growth over the 4 time points (from age 8 to 14 years).
+-   Distance (in mm) from the centre of the pituitary gland to the pterygo-maxillary fissure recorded at ages 8, 10, 12 and 14 years.
+
+-   Interested in the differences between males and females in pattern of growth over the 4 time points (from age 8 to 14 years).
 
 ```{r}
 library(haven)
@@ -35,10 +35,8 @@ potthoffroy |>
 
 We consider the correlation of the value in male and female group
 
-:::: {.columns}
-
+::::: columns
 ::: {.column width="50%"}
-
 ```{r}
 potthoffroy |> 
   filter(sex == "M") |> 
@@ -47,11 +45,9 @@ potthoffroy |>
   ggcorrplot(lab = TRUE) +
   labs(tag = "Male")
 ```
-
 :::
 
 ::: {.column width="50%"}
-
 ```{r}
 potthoffroy |> 
   filter(sex == "F") |> 
@@ -60,10 +56,8 @@ potthoffroy |>
   ggcorrplot(lab = TRUE) +
   labs(tag = "Female")
 ```
-
 :::
-
-::::
+:::::
 
 ::: {.callout-note title = "Conclusion"}
 
@@ -71,7 +65,7 @@ Positive correlations within-cluster. Greater for Females than Males.
 
 :::
 
-## Fitting OLS 
+## Fitting OLS
 
 ```{r}
 data <- potthoffroy |> 
@@ -84,25 +78,31 @@ lm_model <- lm(value ~ sex + age, data = data)
 summary(lm_model)
 ```
 
-::: {.callout-warning}
-
+::: callout-warning
 Pretend observations independent – **WRONG!!**
 
 The estimation of beta (sex, age, intercept) is unbiased, but the standard errors are incorrect if the covariance is not independent.
+:::
 
+::: callout-note
+-   $\widehat{\beta}$ are estimated using Odinary Least Square
+
+-   $Var(\widehat{\beta})$ - derived from covariance matrix of $Y$, known as V
+
+    Covariance = variance $\times$ correlation
+
+    Conventional regression model fit by OLS has $V_i = \sigma^2I_{n_i \times n_i}$
 :::
 
 ## How can we estimate the correct variance of the OLS estimator when the data are not independent?
 
 Robust / empirical / “sandwich” variance estimator:
 
-  - Use actual correlations observed in the data (i.e. empirical correlations)
-  
-  - Robust – for a large number of clusters it converges to the correct variance of the OLS parameter estimate, irrespective of what the true covariance V is, as long as the corrected model for the mean of Y has been specified.
-  
-  - Sandwich: the data driven empirical estimator is the “meat” in the sandwich between two model-based terms (“slices of bread”)
+-   Use actual correlations observed in the data (i.e. empirical correlations)
 
+-   Robust – for a large number of clusters it converges to the correct variance of the OLS parameter estimate, irrespective of what the true covariance V is, as long as the corrected model for the mean of Y has been specified.
 
+-   Sandwich: the data driven empirical estimator is the “meat” in the sandwich between two model-based terms (“slices of bread”)
 
 ```{r}
 library(lmtest)
@@ -122,10 +122,8 @@ se_robust_model
 
 Compare
 
-:::: {.columns}
-
+::::: columns
 ::: {.column width="50%"}
-
 ```{r}
 lm_model |> 
 tbl_regression(
@@ -135,11 +133,9 @@ tbl_regression(
     type = "reference"
   )
 ```
-
 :::
 
 ::: {.column width="50%"}
-
 ```{r}
 se_robust_model |> 
   tbl_regression(
@@ -147,23 +143,144 @@ se_robust_model |>
     estimate_fun = purrr::partial(style_ratio, digits = 3)
   ) 
 ```
-
 :::
-
-::::
+:::::
 
 Sex: difference in mean outcome between sexes at any age = between-subject comparison
 
-  - SE with robust > SE assuming independence (`r se_robust_model[, "Std. Error"][2]` > `r sqrt(diag(vcov(lm_model)))[2]`)
-  
-  - Between cluster comparison is LESS precise with positive within-subject correlation
+-   SE with robust \> SE assuming independence (`r se_robust_model[, "Std. Error"][2]` \> `r sqrt(diag(vcov(lm_model)))[2]`)
+
+-   Between cluster comparison is LESS precise with positive within-subject correlation
 
 Age: effect estimated within-subject.
 
-  - SE with robust < SE independence ( `r se_robust_model[, "Std. Error"][3]` > `r sqrt(diag(vcov(lm_model)))[3]`)
-  
-  - Within-cluster comparison is MORE precise with positive correlation
+-   SE with robust \< SE independence ( `r se_robust_model[, "Std. Error"][3]` \< `r sqrt(diag(vcov(lm_model)))[3]`)
 
+-   Within-cluster comparison is MORE precise with positive correlation
 
+::: {.callout-note title = "Conclusion"}
 
+As we can see, within-cluster comparison is MORE precise with positive correlation. By modelling the covariance V correctly using the robust variance estimator instead of assuming independence, we generally obtain smaller standard errors. How to model covariance V?
 
+:::
+
+## Common correlation / covariance structures {#sec-gee}
+
+1.  Exchangeable: correlation between any two measurements on an individual is the same no matter how far apart in time they are.
+
+2.  Autoregressive: correlation decreases with distance
+
+3.  Unstructured: no pre-determined structure
+
+### Putting together in GEE {.unnumbered}
+
+The covariance **V** is unknown, but take a "guest" at its form.
+
+Call this **W** (e.g. exchangeable, autoregressive, etc.)
+
+-   Can get idea from empirical correlations
+
+-   Called a “working” covariance – we know it may be wrong but we work with it anyway
+
+Step for GEE:
+
+1)  Fit OLS regression, and estimate parameters in **W** using residuals from OLS regression
+
+2)  Solve weighted least squares regression using $\widehat{W}$ to get $\widehat{\beta}_W$
+
+3)  Iterate between $\widehat{W}$ and $\widehat{\beta}_W$ until convergence
+
+## Example data
+
+Data from a study investigating recovery following appendectomy in children. The aim of the study was to determine whether the children who underwent a **laparoscopic** appendectomy achieved a faster rate of recovery than children who underwent **conventional “open”** appendectomy.
+
+In this study a measure of recovery was made using an “uptimer”, a device worn by the children on their thigh. The uptimer senses the position of the thigh and records the times of changes from a horizontal position to a “vertical” position (at least 45 degrees from the horizontal). An **increasing number of position changes** (horizontal to vertical) from one day to the next is a marker of recovery.
+
+```{r}
+appendix <- read_dta("./data/appendix.dta")
+
+appendix <- appendix |> 
+  mutate(lognchanges = log(nchanges),
+         group = factor(group,labels = c("Lap","Open")))  
+```
+
+Plot the distribution of number of change
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+
+appendix |> 
+  ggplot(aes(nchanges))+
+  geom_histogram()
+```
+
+This seem like a skewed distribution, so we will use logarithm
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+
+appendix |> 
+  ggplot(aes(lognchanges))+
+  geom_histogram()
+```
+
+And we will see the description of the data
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+
+appendix |> 
+  ggplot(aes(x = day, y = lognchanges))+
+  geom_line(aes(group = patid))+
+  geom_point()+
+  facet_wrap(~group)+
+  theme_bw()
+```
+
+### Using GEE with different working covariance $W$ {.unnumbered}
+
+The research question is whether the rate of change of the outcome variable – logged number of position changes – differs between the two groups. In order to address this within a regression modeling framework, we need to model the relationship between the outcome and time, and allow this relationship to differ between groups. The effect of surgical group will then be measured by a single interaction parameter.
+
+```{r}
+library(geepack); library(gee)
+```
+
+::: {.panel-tabset .nav-pills}
+### Independence
+
+```{r}
+geefit.ind <- geeglm(lognchanges~day*group,
+                     data = appendix,  
+                     id = patid, 
+                     corstr = "independence")
+summary(geefit.ind)
+```
+
+### Exchangeable
+
+```{r}
+geefit.ex <- geeglm(lognchanges~day*group,
+                      data = appendix, 
+                      id = patid, 
+                      corstr = "exchangeable")
+summary(geefit.ex)
+```
+
+### Autoregressive
+
+```{r}
+geefit.ar1 <- geeglm(lognchanges~day*group,
+                      data = appendix, 
+                      id = patid, 
+                      corstr = "ar1",wave=day)
+summary(geefit.ar1)
+```
+:::
+
+|   | Independence | Exchangeable | Auto-regressive 1 |
+|:---|:---|:---|:---|
+| Group effect (on slope) | -0.1181 | -0.0794 | -0.0613 |
+| Robust SE of group effect (on slope) | 0.1109 | 0.1007 | 0.1015 |
