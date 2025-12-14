@@ -146,7 +146,7 @@ Model output:
   
   - $\beta_1 = 0.784$
   
-  - $b_{0i} \sim N(0,\sigma^2_{b0}), \ SD: \sigma_{b0} = 1.625, \ \sigma^2_{b0} = 2.641 $
+  - $b_{0i} \sim N(0,\sigma^2_{b0}), \ SD: \sigma_{b0} = 1.625, \ \sigma^2_{b0} = 2.641$
   
   - $e_{ij} \sim N(0,\sigma^2_e), \ SD: \sigma_e = \ 1.678, \ \sigma^2_e = 2.816$
   
@@ -156,7 +156,7 @@ Based on random intercepts models $Y_{ij} = (\beta_0 + b_{0i}) + \beta_1 t_{ij} 
 
   -  Level 1: Describes variation within individuals
   
-      - $Y_ij = \beta_{0i} + \beta_{1i}t_{ij} + e_{ij}$
+      - $Y_{ij} = \beta_{0i} + \beta_{1i}t_{ij} + e_{ij}$
     
       - Straight line (linear regression) for each subject
     
