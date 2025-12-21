@@ -1,0 +1,64 @@
+# GEE and GLMM for binary outcome
+
+## Summary GEE and LMM for continous
+
+## Data
+
+Data from a longitudinal study of adolescents in the state of Victoria carried out between August 1992 and July 1995. Approximately 2,000 adolescents were recruited and followed up at six timepoints (“waves”) at six-monthly intervals. Some of the participants were not recruited until the second wave
+
+We will focus on one of the smoking measures: regular smoking. Smoking behaviour was determined at each wave using a 7-day retrospective diary, completed by all participants except those who considered themselves non-smokers or ex-smokers (no cigarette in the previous month). From the diary response, a subject was categorized as a “regular smoker” if they reported smoking on at least six days of the previous week.
+
+We are interested in determining the prevalence of smoking for each gender and investigating how this changes with age. Secondary questions concern the association between the prevalence of smoking and baseline factors such as parental smoking.
+
+|Variable name|Description|
+|:------------|:----------|
+|id|Participant identifier|
+|age|Age of participant at survey wave (years)| 
+|wave|Wave of data collection (1,2,…,6)|
+|sex|Sex (0=male, 1=female)|
+|parsmk|Parental smoking (1=at least one parent smokes most days, 0=otherwise)|
+|regsmoke|Regular smoker (1=participant reports smoking at least 6 days a week, 0=otherwise)|
+
+```{r}
+library(haven)
+smoke_prev <- read_dta("data/smoke_prev.dta")
+head(smoke_prev)
+```
+
+Before analysis, we should center variables by subtracting the sample mean from each observation because:
+
+  - It makes the intercept more interpretable by creating a meaningful zero point; when the coefficient is negative, it is below the population mean, and when the coefficient is positive, it is above the population mean.  
+
+```{r}
+## centering age and wave variables
+smoke_prev <- transform(smoke_prev, age_c = age - 16.2,wave_c = (wave - 3.5)/2)
+```
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+#| fig-cap: We can see the different in x and y axes
+
+library(patchwork)
+library(ggplot2)
+
+p1 <-smoke_prev |> 
+  ggplot(aes(x = wave, y = age))+
+  geom_line(aes(group = id))+
+  labs(title = "Before centering")
+
+p2 <- smoke_prev |> 
+  ggplot(aes(x = wave_c, y = age_c))+
+  geom_line(aes(group = id))+
+  labs(title = "After centering")
+
+p1|p2
+```
+
+Fitting normal logistic regression, ignoring within-subject correlation.
+
+```{r}
+glm.fit1 <- glm(regsmoke ~ sex*age_c, data = smoke_prev, family =binomial)
+summary(glm.fit1)
+```
+

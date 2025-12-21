@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-12-21">
 
-<title>Analysis of Longitudinal and Clustered Data</title>
+<title>4&nbsp; GEE and GLMM for binary outcome – Analysis of Longitudinal and Clustered Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -66,7 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./brief_intro.html" rel="next">
+<link href="./interaction_term.html" rel="next">
+<link href="./linear_mixed.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -106,35 +106,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -147,7 +118,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./binary.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GEE and GLMM for binary outcome</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -174,7 +145,7 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -198,7 +169,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./binary.html" class="sidebar-item-text sidebar-link">
+  <a href="./binary.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GEE and GLMM for binary outcome</span></span></a>
   </div>
 </li>
@@ -218,22 +189,8 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
-  <ul class="collapse">
-  <li><a href="#clustered-and-longitudinal-analysis" id="toc-clustered-and-longitudinal-analysis" class="nav-link" data-scroll-target="#clustered-and-longitudinal-analysis">Clustered and longitudinal analysis</a></li>
-  <li><a href="#example-study-design-with-correlated-data" id="toc-example-study-design-with-correlated-data" class="nav-link" data-scroll-target="#example-study-design-with-correlated-data">Example study design with correlated data</a>
-  <ul class="collapse">
-  <li><a href="#cross-over-trial" id="toc-cross-over-trial" class="nav-link" data-scroll-target="#cross-over-trial">Cross-over trial</a></li>
-  <li><a href="#longitudinal-data" id="toc-longitudinal-data" class="nav-link" data-scroll-target="#longitudinal-data">Longitudinal data</a></li>
-  <li><a href="#clustered-randomised-trials" id="toc-clustered-randomised-trials" class="nav-link" data-scroll-target="#clustered-randomised-trials">Clustered Randomised trials</a></li>
-  </ul></li>
-  <li><a href="#how-to-choose-method-of-analysis" id="toc-how-to-choose-method-of-analysis" class="nav-link" data-scroll-target="#how-to-choose-method-of-analysis">How to choose method of analysis</a>
-  <ul class="collapse">
-  <li><a href="#comparing-within-cluster" id="toc-comparing-within-cluster" class="nav-link" data-scroll-target="#comparing-within-cluster">Comparing within cluster</a></li>
-  <li><a href="#comparing-between-clusters" id="toc-comparing-between-clusters" class="nav-link" data-scroll-target="#comparing-between-clusters">Comparing between clusters</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#summary-gee-and-lmm-for-continous" id="toc-summary-gee-and-lmm-for-continous" class="nav-link active" data-scroll-target="#summary-gee-and-lmm-for-continous"><span class="header-section-number">4.1</span> Summary GEE and LMM for continous</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">4.2</span> Data</a></li>
   </ul>
 </nav>
     </div>
@@ -242,7 +199,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Analysis of Longitudinal and Clustered Data</h1>
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GEE and GLMM for binary outcome</span></h1>
 </div>
 
 
@@ -250,12 +207,6 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">December 21, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -265,152 +216,128 @@ window.Quarto = {
 </header>
 
 
-<section id="introduction" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<section id="clustered-and-longitudinal-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="clustered-and-longitudinal-analysis">Clustered and longitudinal analysis</h2>
-<p>Individual level RCT: randomize individuals to control group and treatment group and measure the outcome for both groups. Vast majority of data analysis of RCTs and observational data uses some from of regression (linear, logistic, generalized linear models, …)</p>
-<p>Simplest case is linear regression with single covariate, and using ordinary least squares (OLS) regression method:</p>
-<p><span class="math display">\[
-Y_i = \beta_{0} + \beta_{1}X_i+e_i
-\]</span></p>
-<p>where <span class="math inline">\(e_i\)</span> is random error with variance <span class="math inline">\(\sigma^2\)</span>. This method assumes that errors <span class="math inline">\(e_i\)</span> are independent of (uncorrelated with) each other:</p>
-<p><span class="math display">\[
-Cov(e_i,e_j) = 0 \ when \ i \neq j
-\]</span></p>
-<p>However, clustered and longitudinal data often be expected to be correlation with group (cluster):</p>
-<ul>
-<li><p>individuals may belong to clusters such as families, schools, medical centers. (<strong>clustered</strong>)</p></li>
-<li><p>the ‘units’ are not individuals but are repeated measures of the same variable on an individual over time. (<strong>longitudinal</strong>)</p></li>
-</ul>
-<p>=&gt; It is not make sense to assume the errors in the regression model are all uncorrelated with each other</p>
-<p>=&gt; If using OLS regression methods (ignoring the correlation structure) to those type of data will generally product <strong>unbiased estimates of effect</strong> but:</p>
-<ul>
-<li><p>Incorrect standard error (SE) =&gt; poor inference (<strong>more important</strong>)</p></li>
-<li><p>The estimates of effects (i.e.&nbsp;regression coefficients) may be more variable (less efficient) than they could be</p></li>
-</ul>
+<section id="summary-gee-and-lmm-for-continous" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="summary-gee-and-lmm-for-continous"><span class="header-section-number">4.1</span> Summary GEE and LMM for continous</h2>
 </section>
-<section id="example-study-design-with-correlated-data" class="level2">
-<h2 class="anchored" data-anchor-id="example-study-design-with-correlated-data">Example study design with correlated data</h2>
-<section id="cross-over-trial" class="level3">
-<h3 class="anchored" data-anchor-id="cross-over-trial">Cross-over trial</h3>
-<p><img src="./fig/cross-over-trial.png" class="img-fluid"></p>
-<p><strong>Pros:</strong></p>
-<ul>
-<li><p>Within-individual comparison - variability of outcome for treatment effect reduced because less variability within- than between-individuals</p></li>
-<li><p>Fewer participants needed than a parallel group design</p></li>
-</ul>
-<p><strong>Cons:</strong></p>
-<p>Carry over effect of the intervention (design assumes minimal carry over effect)</p>
-<p>Participants drop out after 1st treatment and don’t receive 2nd treatment</p>
-<p>Generally, only suitable for:</p>
-<ul>
-<li>Participants with conditions or diseases that are chronic or relatively stable</li>
-<li>Short-term outcomes</li>
-<li>Interventions with short term impact, so washout period is feasible</li>
-</ul>
-</section>
-<section id="longitudinal-data" class="level3">
-<h3 class="anchored" data-anchor-id="longitudinal-data">Longitudinal data</h3>
-<p>In this practical we will use data from a study investigating recovery following appendectomy in children. The aim of the study was to determine whether the children who underwent a laparoscopic appendectomy achieved a faster rate of recovery than children who underwent conventional “open” appendectomy.</p>
-<p>In this study a measure of recovery was made using an “uptimer”, a device worn by the children on their thigh. The uptimer senses the position of the thigh and records the times of changes from a horizontal position to a “vertical” position (at least 45 degrees from the horizontal). An increasing number of position changes (horizontal to vertical) from one day to the next is a marker of recovery.</p>
-<p>Data were obtained from 29 children aged between 8 and 15 years, 18 of whom underwent laparoscopic appendectomy and 11 underwent open appendectomy. The children were not randomly assigned to the types of operation – the decision was made by the surgeon on call at the time of presentation. The uptime data was intended to be recorded for each child from day two post-operatively and thereafter, however some missing data resulted. In this practical we consider days two to five post-surgery.</p>
+<section id="data" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="data"><span class="header-section-number">4.2</span> Data</h2>
+<p>Data from a longitudinal study of adolescents in the state of Victoria carried out between August 1992 and July 1995. Approximately 2,000 adolescents were recruited and followed up at six timepoints (“waves”) at six-monthly intervals. Some of the participants were not recruited until the second wave</p>
+<p>We will focus on one of the smoking measures: regular smoking. Smoking behaviour was determined at each wave using a 7-day retrospective diary, completed by all participants except those who considered themselves non-smokers or ex-smokers (no cigarette in the previous month). From the diary response, a subject was categorized as a “regular smoker” if they reported smoking on at least six days of the previous week.</p>
+<p>We are interested in determining the prevalence of smoking for each gender and investigating how this changes with age. Secondary questions concern the association between the prevalence of smoking and baseline factors such as parental smoking.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 54%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">id</td>
+<td style="text-align: left;">Participant identifier</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">age</td>
+<td style="text-align: left;">Age of participant at survey wave (years)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">wave</td>
+<td style="text-align: left;">Wave of data collection (1,2,…,6)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sex</td>
+<td style="text-align: left;">Sex (0=male, 1=female)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">parsmk</td>
+<td style="text-align: left;">Parental smoking (1=at least one parent smokes most days, 0=otherwise)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">regsmoke</td>
+<td style="text-align: left;">Regular smoker (1=participant reports smoking at least 6 days a week, 0=otherwise)</td>
+</tr>
+</tbody>
+</table>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>appendix <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"./data/appendix.dta"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>appendix<span class="sc">$</span>lognchanges <span class="ot">=</span> <span class="fu">log</span>(appendix<span class="sc">$</span>nchanges)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>appendix<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">factor</span>(appendix<span class="sc">$</span>group,<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Lap"</span>,<span class="st">"Open"</span>))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(appendix, <span class="fu">aes</span>(day,lognchanges,<span class="at">group=</span>patid))<span class="sc">+</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>group)<span class="sc">+</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"log number of changes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>smoke_prev <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"data/smoke_prev.dta"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(smoke_prev)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+      id school  wave   age sex       born_oz parsmk regsmoke wgt_mv wgt_str
+   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl+lbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+1 920006   3010     1  14.2 0 [male]        1      0        0   2.14   0.778
+2 920006   3010     2  14.7 0 [male]        1      0        0   1.12   0.778
+3 920006   3010     3  15.2 0 [male]        1      0        0   1.12   0.778
+4 920006   3010     4  15.7 0 [male]        1      0        0   1.18   0.778
+5 920006   3010     5  16.1 0 [male]        1      0        0   1.22   0.778
+6 920006   3010     6  16.7 0 [male]        1      0        0   1.26   0.778
+# ℹ 1 more variable: sregion &lt;dbl+lbl&gt;</code></pre>
+</div>
+</div>
+<p>Before analysis, we should center variables by subtracting the sample mean from each observation because:</p>
+<ul>
+<li>It makes the intercept more interpretable by creating a meaningful zero point; when the coefficient is negative, it is below the population mean, and when the coefficient is positive, it is above the population mean.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## centering age and wave variables</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>smoke_prev <span class="ot">&lt;-</span> <span class="fu">transform</span>(smoke_prev, <span class="at">age_c =</span> age <span class="sc">-</span> <span class="fl">16.2</span>,<span class="at">wave_c =</span> (wave <span class="sc">-</span> <span class="fl">3.5</span>)<span class="sc">/</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span>smoke_prev <span class="sc">|&gt;</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> age))<span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> id))<span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Before centering"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> smoke_prev <span class="sc">|&gt;</span> </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave_c, <span class="at">y =</span> age_c))<span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> id))<span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"After centering"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>p1<span class="sc">|</span>p2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="binary_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="960"></p>
+<figcaption>We can see the different in x and y axes</figcaption>
 </figure>
 </div>
 </div>
 </div>
-</section>
-<section id="clustered-randomised-trials" class="level3">
-<h3 class="anchored" data-anchor-id="clustered-randomised-trials">Clustered Randomised trials</h3>
-<p><img src="./fig/ClusterRandomisation.png" class="img-fluid"></p>
-<p>Cluster randomised trials are experiments in which clusters of individuals (e.g.&nbsp;schools, villages, general practices) rather than independent individuals are randomly allocated to intervention groups</p>
-<p>Potential reasons include:</p>
-<ul>
-<li><p>Intervention naturally applied at the cluster level (e.g.&nbsp;Effect of water and environment revitalisation in informal settlements in Indonesia and Fiji (RISE))</p></li>
-<li><p>To avoid treatment group contamination (e.g.&nbsp;education program vs usual care to patients in a general practice)</p></li>
-<li><p>Applying the intervention at the cluster level is more feasible than at the individual level (e.g.&nbsp;intervention at a school)</p></li>
-<li><p>Ethical considerations</p></li>
-<li><p>To enhance participant compliance</p></li>
-</ul>
-<p>Unit of randomisation: cluster</p>
-<p>Unit of outcome measure: individual</p>
-<ul>
-<li><p>Observations on participants in the same cluster tend to be correlated (intracluster correlation)</p></li>
-<li><p>Sample size for a cluster randomized trial needs to be greater than an individually randomized trial</p></li>
-<li><p>Sample size needs to be inflated by ‘design effect’ which depends on intracluster correlation and average cluster size. (Note, it is better to have a large number of clusters with less participants per cluster, than a small number of clusters with many participants per cluster)</p></li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
+<p>Fitting normal logistic regression, ignoring within-subject correlation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>glm.fit1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(regsmoke <span class="sc">~</span> sex<span class="sc">*</span>age_c, <span class="at">data =</span> smoke_prev, <span class="at">family =</span>binomial)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm.fit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = regsmoke ~ sex * age_c, family = binomial, data = smoke_prev)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -2.07908    0.05028 -41.349  &lt; 2e-16 ***
+sex          0.25049    0.06599   3.796 0.000147 ***
+age_c        0.26608    0.05901   4.509 6.52e-06 ***
+sex:age_c    0.06319    0.07735   0.817 0.413962    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 6728.6  on 8788  degrees of freedom
+Residual deviance: 6647.5  on 8785  degrees of freedom
+AIC: 6655.5
+
+Number of Fisher Scoring iterations: 4</code></pre>
 </div>
 </div>
-<div class="callout-body-container callout-body">
-<p>The analysis of outcome measures at the individual participant level need to take account of clustering</p>
-</div>
-</div>
-</section>
-</section>
-<section id="how-to-choose-method-of-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-choose-method-of-analysis">How to choose method of analysis</h2>
-<p>Based on:</p>
-<ul>
-<li><p>Data structure</p></li>
-<li><p>Research question</p></li>
-</ul>
-<section id="comparing-within-cluster" class="level3">
-<h3 class="anchored" data-anchor-id="comparing-within-cluster">Comparing within cluster</h3>
-<p>When analysis question involves comparisons within clusters, considering the clustering <strong>increases</strong> precision of estimation (lower standard errors, smaller P-values). Because we are removing a source of variation from the comparison</p>
-<p>Data structure examples:</p>
-<ul>
-<li><p>Longitudinal studies (collect the same measurement overtime, and compare within individuals)</p></li>
-<li><p>Cross over-trials</p></li>
-</ul>
-</section>
-<section id="comparing-between-clusters" class="level3">
-<h3 class="anchored" data-anchor-id="comparing-between-clusters">Comparing between clusters</h3>
-<p>When analysis question involves comparisons between clusters, considering the clustering decreases precision of estimation (higher standard errors, higher P-values). Because positive intra-cluster correlation reduces the amount of independent information provided by individuals</p>
-<p>Data structure examples:</p>
-<ul>
-<li>Cluster trials</li>
-</ul>
-</section>
-</section>
-</section>
-<section id="summary" class="level1">
-<h1>Summary</h1>
-<p>Study designs have the correlated observations:</p>
-<ul>
-<li><p>Clusters – individuals from the same family, hospital, school</p></li>
-<li><p>Longitudinal data – repeated measures of an outcome on the same individual</p></li>
-<li><p>Paired data – two measurements from the same individual (e.g.&nbsp;cross-over trials)</p></li>
-</ul>
-<p>=&gt; If we ignore this correlation, conclusions obtained will be misleading: Incorrect standard errors (will be illustrated in the next section <a href="brief_intro.html#sec-cwc" class="quarto-xref"><span>Comparison within cluster</span></a>)</p>
-<p>Accounting for clustering:</p>
-<ul>
-<li><p>Increases precision for within-cluster comparisons</p></li>
-<li><p>Decreases precision for between-cluster comparisons</p></li>
-</ul>
 
 
 </section>
@@ -818,10 +745,13 @@ Note
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./linear_mixed.html" class="pagination-link" aria-label="Linear mixed model">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear mixed model</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./brief_intro.html" class="pagination-link" aria-label="Brief introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Brief introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./interaction_term.html" class="pagination-link" aria-label="Explain interaction term in regression">
+        <span class="nav-page-text">Explain interaction term in regression</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

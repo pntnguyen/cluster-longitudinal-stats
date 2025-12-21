@@ -15,6 +15,8 @@ book:
     - brief_intro.qmd
     - gee.qmd
     - linear_mixed.qmd
+    - binary.qmd
+    - interaction_term.qmd
 
 bibliography: references.bib
 

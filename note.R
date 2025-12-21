@@ -212,6 +212,106 @@ data |>
   geom_point(aes(y = value))+
   facet_wrap(~sex)
 
+###
+
+library(haven)
+smoke_prev <- read_dta("data/smoke_prev.dta")
+
+## smoking change in each gender 
+
+### change with age
+
+smoke_prev |> 
+  group_by(wave,sex) |> 
+  summarise(mean_regsmoke = mean(regsmoke),.groups = "drop") |>
+  ggplot(aes(x = wave,y = mean_regsmoke))+
+  geom_point()+
+  ylim(c(0,1))+
+  facet_wrap(~sex)
+
+smoke_prev <- transform(smoke_prev, age_c = age - 16.2,
+                        wave_c = (wave - 3.5)/2)
+
+smoke_prev |> 
+  ggplot(aes(x = wave_c, y = age_c))+
+  geom_line(aes(group = id))
+
+smoke_prev |> 
+  ggplot(aes(x = wave, y = age))+
+  geom_line(aes(group = id))
+
+mean(smoke_prev$wave)
+
+## centering make the estimation more intepretable, (mean = 0, the negative estimation => below the mean)
+## to create a meaningful zero point => make the intercept more meaningful
+## run the regression with interaction terms
+## important in multilevel modeling 
+
+library(Hmisc)
+library(geepack); library(gee) # two alternative packages for fitting gee models
+library(doBy)  
 
 
+glm.fit1 <- glm(regsmoke ~ sex+age_c, data = smoke_prev, family =binomial)
+# summary(glm.fit1)
 
+smoke_prev |> 
+  mutate(pred = exp(predict(glm.fit1))) |> 
+  group_by(age,sex) |> 
+  summarise(meanreg = mean(pred),.groups = "drop") |>
+  pivot_wider(names_from = sex,values_from = meanreg)
+  ggplot(aes(x = age, y = meanreg))+
+  geom_line()+
+  facet_wrap(~sex)+
+  scale_y_continuous(limits = c(0,1))
+
+predict(glm.fit1)
+
+glm.fit1.1 <- glm(regsmoke ~ sex+I(age_c*(sex=="male"))+I(age_c*(sex=="female")), 
+                  data = smoke_prev, family =binomial)
+summary(glm.fit1.1)
+
+
+smoke_prev |> 
+  group_by(wave,age) |> 
+  summarise(mean_regsmoke = mean(regsmoke),.groups = "drop") |>
+  ggplot(aes(x = wave,y = mean_regsmoke))+
+  geom_point()+
+  ylim(c(0,1))+
+  facet_wrap(~sex)
+
+
+### respiratory data
+library(geepack)
+
+library(janitor)
+
+respiratory |> 
+  group_by(treat,visit) |> 
+  summarise(out = mean(outcome),
+            base = mean(baseline),.groups = "drop") |> 
+  pivot_wider(names_from = visit,values_from = out) |> 
+  magrittr::set_colnames(c("treat","0","1","2","3","4")) |> 
+  pivot_longer(cols = -treat,names_to = "visit") |> 
+  ggplot(aes(x = visit, y = value,color = treat))+
+  geom_point()+
+  ylim(c(0,1))
+
+respiratory |> 
+  ggplot(aes(x = visit, y = outcome,color = treat))+
+  # geom_jitter(aes(group = id))
+  geom_point(position = position_jitterdodge(0.1, dodge.width = .1))+
+  stat_summary(fun = "mean", size = 2, 
+               position = position_dodge(0.1), geom = "point")+
+  stat_summary(fun.data = "mean_se" ,width = 0, geom = "errorbar", 
+               position = position_dodge(0.1)) 
+
+respiratory |> 
+  pivot_wider(id_cols = c(baseline,visit,outcome))
+
+?respiratory
+
+fit <- geeglm(outcome ~ treat*visit, data=respiratory, id=id, 
+       family=binomial(), corstr="unstructured") 
+
+summary(fit)
