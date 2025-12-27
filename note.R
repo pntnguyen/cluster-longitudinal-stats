@@ -315,3 +315,20 @@ fit <- geeglm(outcome ~ treat*visit, data=respiratory, id=id,
        family=binomial(), corstr="unstructured") 
 
 summary(fit)
+
+factor(smoke_prev$sex)
+
+library(dplyr)
+library(magrittr)
+smoke_prev %<>% 
+  mutate(sex = factor(sex,labels = c("female","male"),levels = c(1,0))) 
+
+smoke_prev |> 
+  mutate(sex = factor)
+
+attr(smoke_prev$sex, "label")
+
+library(gtsummary)
+
+glm.fit1 |> 
+  tbl_regression(exponentiate = TRUE)

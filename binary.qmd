@@ -1,6 +1,6 @@
 # GEE and GLMM for binary outcome
 
-## Summary GEE and LMM for continous
+## Summary GEE and LMM for continuous outcomes
 
 ## Data
 
@@ -20,10 +20,12 @@ We are interested in determining the prevalence of smoking for each gender and i
 |regsmoke|Regular smoker (1=participant reports smoking at least 6 days a week, 0=otherwise)|
 
 ```{r}
-library(haven)
-smoke_prev <- read_dta("data/smoke_prev.dta")
+library(foreign)
+smoke_prev <- read.dta("data/smoke_prev.dta")
 head(smoke_prev)
 ```
+
+Label sex variable 
 
 Before analysis, we should center variables by subtracting the sample mean from each observation because:
 
@@ -55,10 +57,116 @@ p2 <- smoke_prev |>
 p1|p2
 ```
 
-Fitting normal logistic regression, ignoring within-subject correlation.
+## Fitting normal logistic regression, ignoring within-subject correlation.
 
 ```{r}
 glm.fit1 <- glm(regsmoke ~ sex*age_c, data = smoke_prev, family =binomial)
 summary(glm.fit1)
 ```
 
+Using `gtsummary` to create summary table, in this code we used `exponential = TRUE` to delog the odds ratio
+
+```{r}
+library(gtsummary)
+
+glm.fit1 |> 
+  tbl_regression(exponentiate = TRUE,
+                 intercept = TRUE)
+```
+
+
+Interpret the coefficients
+
+  - `Intercept`: the odds of being a regular smoker for the reference group (males) at the reference value of age (age_c = 0)
+
+  -  `sex`: Difference in odds of regular smoking between females and males at age_c = 0
+
+  - `age_c`: Change in odds of regular smoking per 1-unit increase in age (centered) among reference group ( sex = 0 = males)
+  
+  - `sex * age_c` : Difference in the age effect between males and females (effect modification)
+  
+To calculate the change in odds of regular smoking per 1-unit in age among females, we should take one step, using `esticon()` function
+
+```{r}
+library(doBy) 
+
+esticon(glm.fit1, c(0, 0, 1, 1)) |> exp()
+```
+
+The logistic regression above is equaled model which directly gives both age effects for male and females
+
+```{r}
+glm.fit1.1 <- glm(regsmoke ~ sex+I(age_c*(sex=="male"))+I(age_c*(sex=="female")), 
+                  data = smoke_prev, family =binomial)
+
+summary(glm.fit1.1)
+```
+
+```{r}
+glm.fit1.1 |> 
+  tbl_regression(exponentiate = TRUE,
+                 intercept = TRUE)
+
+```
+
+  - `Intercept`: the odds of being a regular smoker for the reference group (males) at the reference value of age (age_c = 0)
+
+  -  `sex`: Difference in odds of regular smoking between males and females at age_c = 0
+
+  - Coefficient at (third line): Change in odds of regular smoking per 1-unit increase in age (centered) among males
+  
+  -  Coefficient at (fourth line): Change in odds of regular smoking per 1-unit increase in age (centered) among females
+  
+## Incorporate correlation in outcome data: GEE
+
+  - Unlike the normal distribution, binomial has no natural multivariate version, so full probability model approach to logistic regression is more challenging
+  
+  - However, as previously with continuous outcome, the *generalized estimating equations* produce unbiased coefficient estimates under certain conditions
+  
+  - Specify working correlation matrix and use robust variance estimates
+  
+```{r}
+library(geepack); library(gee)
+
+robglm.fit1 <- geeglm(regsmoke ~ sex*age_c, data = smoke_prev, family =binomial,id=id)
+summary(robglm.fit1)
+```
+  
+Compare with normal logistic regression
+
+::: columns
+::: {.column width="49%"}
+
+GEE
+  
+```{r}
+robglm.fit1 |> 
+  tbl_regression(intercept = TRUE,
+                 exponentiate = TRUE)
+```
+
+:::  
+
+::: {.column width="2%"}
+
+:::
+
+::: {.column width="49%"}
+
+Normal Linear regression
+
+```{r}
+glm.fit1 |> 
+  tbl_regression(exponentiate = TRUE,
+                 intercept = TRUE)
+```
+
+:::
+
+:::
+
+::: {.callout-note}
+
+As shown, the coefficient estimates are identical, but the 95% confidence interval is wider and the p-value is larger for the sex coefficient compared with the standard logistic regression. By using robust variance estimation, GEE accounts for potential within-individual correlation and answers the question, “If observations within an individual are correlated, how uncertain should the estimates be?” These results suggest reduced effective information for time-invariant covariates.
+
+:::
